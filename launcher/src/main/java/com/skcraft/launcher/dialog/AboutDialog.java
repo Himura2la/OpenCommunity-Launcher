@@ -30,10 +30,9 @@ public class AboutDialog extends JDialog {
         container.setLayout(new MigLayout("insets dialog"));
 
         container.add(new JLabel("<html>Licensed under GNU General Public License, version 3."), "wrap, gapbottom unrel");
-        container.add(new JLabel("<html>You are using SKCraft Launcher, an open-source customizable<br>" +
+        container.add(new JLabel("<html>You are using GoodLauncher, an open-source customizable<br>" +
                 "launcher platform that anyone can use."), "wrap, gapbottom unrel");
-        container.add(new JLabel("<html>SKCraft does not necessarily endorse the version of<br>" +
-                "the launcher that you are using."), "wrap, gapbottom unrel");
+        container.add(new JLabel("<html>By Envel."), "wrap, gapbottom unrel");
 
         JButton okButton = new JButton("OK");
         JButton sourceCodeButton = new JButton("Website");

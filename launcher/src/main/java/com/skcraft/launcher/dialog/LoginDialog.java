@@ -14,6 +14,7 @@ import com.skcraft.launcher.Configuration;
 import com.skcraft.launcher.Launcher;
 import com.skcraft.launcher.auth.AuthenticationException;
 import com.skcraft.launcher.auth.Session;
+import com.skcraft.launcher.auth.OfflineSession;
 import com.skcraft.launcher.auth.YggdrasilLoginService;
 import com.skcraft.launcher.persistence.Persistence;
 import com.skcraft.launcher.swing.*;
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -36,14 +38,16 @@ import java.util.concurrent.Callable;
 public class LoginDialog extends JDialog {
 
     private final Launcher launcher;
-    @Getter private Session session;
+    @Getter public Session session;
+    @Getter public Boolean force_update;
 
     private final JTextField usernameText = new JTextField();
+    private final JTextField idCombo = new JTextField();
     private final JPasswordField passwordText = new JPasswordField();
     private final JButton loginButton = new JButton(SharedLocale.tr("login.login"));
-    private final LinkButton recoverButton = new LinkButton(SharedLocale.tr("login.recoverAccount"));
     private final JButton cancelButton = new JButton(SharedLocale.tr("button.cancel"));
     private final FormPanel formPanel = new FormPanel();
+    private final JButton offlineButton = new JButton(SharedLocale.tr("accounts.add"));
     private final LinedBoxPanel buttonsPanel = new LinedBoxPanel(true);
 
     /**
@@ -80,46 +84,45 @@ public class LoginDialog extends JDialog {
 
         loginButton.setFont(loginButton.getFont().deriveFont(Font.BOLD));
 
-        formPanel.addRow(new JLabel(SharedLocale.tr("login.idEmail")), usernameText);
-        formPanel.addRow(new JLabel(SharedLocale.tr("login.password")), passwordText);
+        formPanel.addRow(new JLabel(SharedLocale.tr("login.name")), idCombo);
         buttonsPanel.setBorder(BorderFactory.createEmptyBorder(26, 13, 13, 13));
 
-        buttonsPanel.addElement(recoverButton);
         buttonsPanel.addGlue();
-        buttonsPanel.addElement(loginButton);
+        //buttonsPanel.addElement(off_update);
+        buttonsPanel.addElement(offlineButton);
         buttonsPanel.addElement(cancelButton);
 
         add(formPanel, BorderLayout.CENTER);
         add(buttonsPanel, BorderLayout.SOUTH);
 
-        getRootPane().setDefaultButton(loginButton);
+        getRootPane().setDefaultButton(offlineButton);
 
-        passwordText.setComponentPopupMenu(TextFieldPopupMenu.INSTANCE);
+        //passwordText.setComponentPopupMenu(TextFieldPopupMenu.INSTANCE);
 
-        recoverButton.addActionListener(
-                ActionListeners.openURL(recoverButton, launcher.getProperties().getProperty("resetPasswordUrl")));
+        //recoverButton.addActionListener(
+        //        ActionListeners.openURL(recoverButton, launcher.getProperties().getProperty("resetPasswordUrl")));
 
-        loginButton.addActionListener(e -> prepareLogin());
+        offlineButton.addActionListener(e -> prepareLogin());
         cancelButton.addActionListener(e -> dispose());
     }
 
-    @SuppressWarnings("deprecation")
-    private void prepareLogin() {
-        if (!usernameText.getText().isEmpty()) {
-            String password = passwordText.getText();
+    public void prepareLogin() {
+        final String name = idCombo.getText();
 
-            if (password == null || password.isEmpty()) {
-                SwingHelper.showErrorDialog(this, SharedLocale.tr("login.noPasswordError"), SharedLocale.tr("login.noPasswordTitle"));
-            } else {
-                attemptLogin(usernameText.getText(), password);
-            }
-        } else {
-            SwingHelper.showErrorDialog(this, SharedLocale.tr("login.noLoginError"), SharedLocale.tr("login.noLoginTitle"));
+           new OfflineSession(name);
+        String playerName = idCombo.getText();
+        if (idCombo.getSelectedText() != null) {
+            playerName = idCombo.getSelectedText().toString();
         }
+        if (playerName.contains("@")) {
+            playerName = launcher.getProperties().getProperty("" +
+                    "");
+        }
+        setResult(new OfflineSession(playerName));
     }
 
-    private void attemptLogin(String username, String password) {
-        LoginCallable callable = new LoginCallable(username, password);
+    private void attemptLogin(String username) {
+        LoginCallable callable = new LoginCallable(username);
         ObservableFuture<Session> future = new ObservableFuture<Session>(
                 launcher.getExecutor().submit(callable), callable);
 
@@ -152,27 +155,17 @@ public class LoginDialog extends JDialog {
     @RequiredArgsConstructor
     private class LoginCallable implements Callable<Session>, ProgressObservable {
         private final String username;
-        private final String password;
 
         @Override
         public Session call() throws AuthenticationException, IOException, InterruptedException {
             YggdrasilLoginService service = launcher.getYggdrasil();
-            Session identity = service.login(username, password);
+            Session identity = service.login(username);
 
-            // The presence of the identity (profile in Mojang terms) corresponds to whether the account
-            // owns the game, so we need to check that
-            if (identity != null) {
-                // Set offline enabled flag to true
                 Configuration config = launcher.getConfig();
-                if (!config.isOfflineEnabled()) {
                     config.setOfflineEnabled(true);
                     Persistence.commitAndForget(config);
-                }
 
                 return identity;
-            } else {
-                throw new AuthenticationException("Minecraft not owned", SharedLocale.tr("login.minecraftNotOwnedError"));
-            }
         }
 
         @Override

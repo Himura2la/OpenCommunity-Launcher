@@ -16,6 +16,7 @@ import com.skcraft.launcher.swing.LinedBoxPanel;
 import com.skcraft.launcher.swing.SwingHelper;
 import com.skcraft.launcher.util.SharedLocale;
 import com.skcraft.launcher.util.SwingExecutor;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import javax.swing.*;
@@ -170,7 +171,11 @@ public class AccountSelectDialog extends JDialog {
 	}
 
 	private void attemptExistingLogin(SavedSession session) {
-		if (session == null) return;
+
+		if (accountList.getSelectedValue() != null) {
+			new OfflineSession(session.getUsername());
+		}
+		setResult(new OfflineSession(session.getUsername()));
 
 		LoginService loginService = launcher.getLoginService(session.getType());
 		RestoreSessionCallable callable = new RestoreSessionCallable(loginService, session);

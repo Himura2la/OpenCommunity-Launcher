@@ -17,10 +17,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.net.*;
 import java.util.*;
 
 import static com.skcraft.launcher.LauncherUtils.checkInterrupted;
@@ -117,7 +114,8 @@ public class HttpRequest implements Closeable, ProgressObservable {
 
             conn = this.runRequest(url);
 
-            inputStream = isSuccessCode() ? conn.getInputStream() : conn.getErrorStream();
+            inputStream = conn.getResponseCode() == HttpURLConnection.HTTP_OK ?
+                    conn.getInputStream() : conn.getErrorStream();
 
             successful = true;
         } finally {
@@ -134,7 +132,7 @@ public class HttpRequest implements Closeable, ProgressObservable {
             throw new IOException("Too many redirects!");
         }
 
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        HttpURLConnection conn = (HttpURLConnection) reformat(url).openConnection();
         conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Java) SKMCLauncher");
         conn.setInstanceFollowRedirects(false);
 
@@ -176,6 +174,7 @@ public class HttpRequest implements Closeable, ProgressObservable {
             case 307:
             case 308:
                 String location = conn.getHeaderField("Location");
+                location = URLDecoder.decode(location, "UTF-8");
                 redirectCount++;
 
                 return runRequest(new URL(this.url, location));
@@ -244,16 +243,6 @@ public class HttpRequest implements Closeable, ProgressObservable {
         }
 
         return conn.getResponseCode();
-    }
-
-    /**
-     * Check if the response code indicates a successful request.
-     * @return True if response code is 2xx, false otherwise.
-     * @throws IOException on I/O error getting the response code.
-     */
-    public boolean isSuccessCode() throws IOException {
-        int code = getResponseCode();
-        return code >= 200 && code < 300;
     }
 
     /**
@@ -361,10 +350,6 @@ public class HttpRequest implements Closeable, ProgressObservable {
     }
 
     public Optional<PartialDownloadInfo> canRetryPartial() {
-        if (conn == null) {
-            return Optional.empty();
-        }
-
         if ("bytes".equals(conn.getHeaderField("Accept-Ranges"))) {
             return Optional.of(new PartialDownloadInfo(contentLength, readBytes));
         }
@@ -445,6 +430,29 @@ public class HttpRequest implements Closeable, ProgressObservable {
             return new URL(url);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * URL may contain spaces and other nasties that will cause a failure.
+     *
+     * @param existing the existing URL to transform
+     * @return the new URL, or old one if there was a failure
+     */
+    private static URL reformat(URL existing) {
+        try {
+            URL url = new URL(existing.toString());
+            URI uri = new URI(
+                    url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(),
+                    url.getPath(), url.getQuery(), url.getRef());
+            url = uri.toURL();
+            return url;
+        } catch (MalformedURLException e) {
+            log.warning("Failed to reformat url " + existing.toString() + ", using unformatted version.");
+            return existing;
+        } catch (URISyntaxException e) {
+            log.warning("Failed to reformat url " + existing.toString() + ", using unformatted version.");
+            return existing;
         }
     }
 

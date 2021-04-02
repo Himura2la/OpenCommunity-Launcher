@@ -29,9 +29,9 @@ public class YggdrasilLoginService implements LoginService {
     private final URL authUrl;
     private final String clientId;
 
-    public Session login(String id, String password)
+    public Session login(String id)
             throws IOException, InterruptedException, AuthenticationException {
-        AuthenticatePayload payload = new AuthenticatePayload(new Agent("Minecraft"), id, password, clientId);
+        AuthenticatePayload payload = new AuthenticatePayload(new Agent("Minecraft"), id, clientId);
 
         return call(this.authUrl, payload, null);
     }
@@ -59,15 +59,6 @@ public class YggdrasilLoginService implements LoginService {
             AuthenticateResponse response = req.returnContent().asJson(AuthenticateResponse.class);
             Profile profile = response.getSelectedProfile();
 
-            if (previous != null && previous.getAvatarImage() != null) {
-                profile.setAvatarImage(previous.getAvatarImage());
-            } else {
-                McProfileResponse skinProfile = MinecraftServicesAuthorizer
-                        .getUserProfile("Bearer " + response.getAccessToken());
-
-                profile.setAvatarImage(MinecraftSkinService.fetchSkinHead(skinProfile));
-            }
-
             return profile;
         }
     }
@@ -82,7 +73,6 @@ public class YggdrasilLoginService implements LoginService {
     private static class AuthenticatePayload {
         private final Agent agent;
         private final String username;
-        private final String password;
         private final String clientToken;
     }
 
