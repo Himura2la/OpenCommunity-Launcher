@@ -15,30 +15,19 @@ import java.awt.*;
 import java.util.logging.Level;
 
 @Log
-public class FancyLauncher {
+public class RedditLauncher {
 
     public static void main(final String[] args) {
         Launcher.setupLogger();
 
         SwingUtilities.invokeLater(new Runnable() {
-            @Override
             public void run() {
                 try {
-                    Thread.currentThread().setContextClassLoader(FancyLauncher.class.getClassLoader());
-                    UIManager.getLookAndFeelDefaults().put("ClassLoader", FancyLauncher.class.getClassLoader());
-                    UIManager.getDefaults().put("SplitPane.border", BorderFactory.createEmptyBorder());
-                    JFrame.setDefaultLookAndFeelDecorated(true);
-                    JDialog.setDefaultLookAndFeelDecorated(true);
-                    System.setProperty("sun.awt.noerasebackground", "true");
-                    System.setProperty("substancelaf.windowRoundedCorners", "false");
-
-                    if (!SwingHelper.setLookAndFeel("com.skcraft.launcher.skin.LauncherLookAndFeel")) {
-                        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                    }
-
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                     Launcher launcher = Launcher.createFromArguments(args);
                     launcher.setMainWindowSupplier(new CustomWindowSupplier(launcher));
                     launcher.showLauncherWindow();
+
                 } catch (Throwable t) {
                     log.log(Level.WARNING, "Load failure", t);
                     SwingHelper.showErrorDialog(null, "Uh oh! The updater couldn't be opened because a " +
@@ -56,9 +45,9 @@ public class FancyLauncher {
             this.launcher = launcher;
         }
 
-        @Override
         public Window get() {
-            return new FancyLauncherFrame(launcher);
+            return new RedditLauncherFrame(launcher);
         }
     }
+
 }

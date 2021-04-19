@@ -16,7 +16,7 @@ import org.pushingpixels.substance.api.painter.highlight.ClassicHighlightPainter
 import org.pushingpixels.substance.api.skin.GraphiteSkin;
 
 public class LauncherSkin extends GraphiteSkin {
-
+/*
     public LauncherSkin() {
         ColorSchemes schemes = SubstanceSkin.getColorSchemes("com/skcraft/launcher/skin/graphite.colorschemes");
 
@@ -89,6 +89,6 @@ public class LauncherSkin extends GraphiteSkin {
         this.highlightBorderPainter = new ClassicBorderPainter();
 
         this.watermarkScheme = schemes.get("Graphite Watermark");
-    }
+    }*/
 
 }

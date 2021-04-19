@@ -17,7 +17,7 @@ public class FancyBackgroundPanel extends JPanel {
 
     public FancyBackgroundPanel() {
         try {
-            background = ImageIO.read(FancyBackgroundPanel.class.getResourceAsStream("launcher_bg.jpg"));
+            background = ImageIO.read(FancyBackgroundPanel.class.getResourceAsStream("banner.jpg"));
         } catch (IOException e) {
             background = null;
         }
