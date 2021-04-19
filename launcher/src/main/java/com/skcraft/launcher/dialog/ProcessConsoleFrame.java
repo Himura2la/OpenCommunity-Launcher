@@ -80,7 +80,7 @@ public class ProcessConsoleFrame extends ConsoleFrame {
     }
 
     @Override
-    protected void performClose() {
+    public void performClose() {
         if (hasProcess()) {
             if (killOnClose) {
                 performKill();

@@ -118,7 +118,7 @@ public class ConsoleFrame extends JFrame {
     /**
      * Attempt to perform window close.
      */
-    protected void performClose() {
+    public void performClose() {
         messageLog.detachGlobalHandler();
         messageLog.clear();
         registeredGlobalLog = false;

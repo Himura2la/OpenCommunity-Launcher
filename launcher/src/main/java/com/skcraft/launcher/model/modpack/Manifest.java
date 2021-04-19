@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -42,7 +43,7 @@ public class Manifest extends BaseManifest {
     private LaunchModifier launchModifier;
     private List<Feature> features = new ArrayList<Feature>();
     @JsonManagedReference("manifest")
-    private List<ManifestEntry> tasks = new ArrayList<ManifestEntry>();
+    private List<ManifestEntry> tasks = Collections.synchronizedList(new ArrayList<ManifestEntry>());
     @Getter @Setter @JsonIgnore
     private Installer installer;
     private VersionManifest versionManifest;
