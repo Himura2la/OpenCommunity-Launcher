@@ -84,7 +84,6 @@ public final class LauncherUtils {
     }
 
 
-
     public static void interruptibleDelete(File file, List<File> failures) throws IOException, InterruptedException {
         checkInterrupted();
 

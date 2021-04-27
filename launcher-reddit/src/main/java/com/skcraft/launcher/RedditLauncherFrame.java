@@ -8,14 +8,12 @@ package com.skcraft.launcher;
 
 import com.skcraft.launcher.dialog.LauncherFrame;
 import com.skcraft.launcher.swing.*;
+import com.skcraft.launcher.util.Environment;
+import com.skcraft.launcher.util.Platform;
 import lombok.NonNull;
-import com.skcraft.launcher.dialog.*;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class RedditLauncherFrame extends LauncherFrame {
@@ -32,11 +30,14 @@ public class RedditLauncherFrame extends LauncherFrame {
         return WebpagePanel.forHTML("");
     }
 
-    public JButton createPrimaryButton(String name) {
-        JButton button = new ColoredButton(name, Theme.primary, Theme.primaryAlt);
-        button.setFont(new Font(button.getFont().getName(), Font.PLAIN, Theme.primarySize));
-        button.setForeground(Theme.primaryText);
-        button.setPreferredSize(Theme.primaryButtonSize);
+    protected JButton createPrimaryButton(String name) {
+        JButton button = new JButton(name);
+        if (Environment.detectPlatform() == Platform.WINDOWS) {
+            button = new ColoredButton(name, Theme.primary, Theme.primaryAlt);
+            button.setFont(new Font(button.getFont().getName(), Font.PLAIN, Theme.primarySize));
+            button.setForeground(Theme.primaryText);
+            button.setPreferredSize(Theme.primaryButtonSize);
+        }
         return button;
     }
 
@@ -82,7 +83,6 @@ public class RedditLauncherFrame extends LauncherFrame {
 
         JPanel updateControls = new JPanel();
         updateControls.add(refreshButton);
-        updateControls.add(updateCheck);
         updateControls.setBackground(getAltFrostColor(Theme.frost));
 
         JPanel left = new FrostPanel(root, Theme.frost);

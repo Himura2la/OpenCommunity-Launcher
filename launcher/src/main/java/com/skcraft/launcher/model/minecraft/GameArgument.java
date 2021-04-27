@@ -19,36 +19,36 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor
 public class GameArgument {
-	@JsonProperty("value")
-	@JsonDeserialize(using = ArgumentValueDeserializer.class)
-	@JsonSerialize(using = ArgumentValueSerializer.class)
-	private List<String> values;
-	private List<Rule> rules;
+    @JsonProperty("value")
+    @JsonDeserialize(using = ArgumentValueDeserializer.class)
+    @JsonSerialize(using = ArgumentValueSerializer.class)
+    private List<String> values;
+    private List<Rule> rules;
 
-	public GameArgument(List<String> values) {
-		this.values = values;
-	}
+    public GameArgument(List<String> values) {
+        this.values = values;
+    }
 
-	public GameArgument(String value) {
-		this.values = Lists.newArrayList(value);
-	}
+    public GameArgument(String value) {
+        this.values = Lists.newArrayList(value);
+    }
 
-	@JsonIgnore
-	public String getJoinedValue() {
-		return Joiner.on(' ').join(values);
-	}
+    @JsonIgnore
+    public String getJoinedValue() {
+        return Joiner.on(' ').join(values);
+    }
 
-	public boolean shouldApply(Environment environment, FeatureList featureList) {
-		if (getRules() == null) return true;
+    public boolean shouldApply(Environment environment, FeatureList featureList) {
+        if (getRules() == null) return true;
 
-		boolean result = false;
+        boolean result = false;
 
-		for (Rule rule : rules) {
-			if (rule.matches(environment, featureList)) {
-				result = rule.isAllowed();
-			}
-		}
+        for (Rule rule : rules) {
+            if (rule.matches(environment, featureList)) {
+                result = rule.isAllowed();
+            }
+        }
 
-		return result;
-	}
+        return result;
+    }
 }

@@ -45,11 +45,12 @@ public class Updater extends BaseUpdater implements Callable<Instance>, Progress
     private final Launcher launcher;
     private final Instance instance;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean online;
 
-    private List<URL> librarySources = new ArrayList<URL>();
-    private List<URL> assetsSources = new ArrayList<URL>();
+    private final List<URL> librarySources = new ArrayList<URL>();
+    private final List<URL> assetsSources = new ArrayList<URL>();
 
     private ProgressObservable progress = new DefaultProgress(-1, SharedLocale.tr("instanceUpdater.preparingUpdate"));
 
@@ -105,7 +106,7 @@ public class Updater extends BaseUpdater implements Callable<Instance>, Progress
     /**
      * Check whether the package manifest contains an embedded version manifest,
      * otherwise we'll have to download the one for the given Minecraft version.
-     *
+     * <p>
      * BACKWARDS COMPATIBILITY:
      * Old manifests have an embedded version manifest without the minecraft JARs list present.
      * If we find a manifest without that jar list, fetch the newer copy from launchermeta and use the list from that.
@@ -150,9 +151,9 @@ public class Updater extends BaseUpdater implements Callable<Instance>, Progress
      * Update the given instance.
      *
      * @param instance the instance
-     * @throws IOException thrown on I/O error
+     * @throws IOException          thrown on I/O error
      * @throws InterruptedException thrown on interruption
-     * @throws ExecutionException thrown on execution error
+     * @throws ExecutionException   thrown on execution error
      */
     protected void update(Instance instance) throws Exception {
         // Mark this instance as local

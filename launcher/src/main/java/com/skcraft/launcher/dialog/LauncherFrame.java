@@ -44,17 +44,17 @@ public class LauncherFrame extends JFrame {
     private final Launcher launcher;
 
     @Getter
-    public final InstanceTable instancesTable = new InstanceTable();
-    public final InstanceTableModel instancesModel;
+    protected final InstanceTable instancesTable = new InstanceTable();
+    protected final InstanceTableModel instancesModel;
     @Getter
-    public final JScrollPane instanceScroll = new JScrollPane(instancesTable);
-    public WebpagePanel webView;
-    public JSplitPane splitPane;
-    public final JButton launchButton = new JButton(SharedLocale.tr("launcher.launch"));
-    public final JButton refreshButton = new JButton(SharedLocale.tr("launcher.checkForUpdates"));
-    public final JButton optionsButton = new JButton(SharedLocale.tr("launcher.options"));
-    public final JButton selfUpdateButton = new JButton(SharedLocale.tr("launcher.updateLauncher"));
-    public final JCheckBox updateCheck = new JCheckBox(SharedLocale.tr("launcher.downloadUpdates"));
+    protected final JScrollPane instanceScroll = new JScrollPane(instancesTable);
+    protected WebpagePanel webView;
+    protected JSplitPane splitPane;
+    protected final JButton launchButton = createPrimaryButton(SharedLocale.tr("launcher.launch"));
+    protected final JButton refreshButton = new JButton(SharedLocale.tr("launcher.checkForUpdates"));
+    protected final JButton optionsButton = createPrimaryButton(SharedLocale.tr("launcher.options"));
+    protected final JButton selfUpdateButton = new JButton(SharedLocale.tr("launcher.updateLauncher"));
+    protected final JCheckBox updateCheck = createCheckBox(SharedLocale.tr("launcher.downloadUpdates"));
 
     /**
      * Create a new frame.
@@ -83,7 +83,7 @@ public class LauncherFrame extends JFrame {
         });
     }
 
-    public void initComponents() {
+    protected void initComponents() {
         JPanel container = createContainerPanel();
         container.setLayout(new MigLayout("fill, insets dialog", "[][]push[][]", "[grow][]"));
 
@@ -115,7 +115,7 @@ public class LauncherFrame extends JFrame {
         container.add(optionsButton);
         container.add(launchButton);
 
-        add(container, BorderLayout.CENTER);
+        add(container);
 
         instancesModel.addTableModelListener(new TableModelListener() {
             @Override
@@ -176,6 +176,18 @@ public class LauncherFrame extends JFrame {
         return new JPanel();
     }
 
+    protected JButton createPrimaryButton(String name) {
+        return new JButton(name);
+    }
+
+    protected JButton createSecondaryButton(String name) {
+        return new JButton(name);
+    }
+
+    protected JCheckBox createCheckBox(String name) {
+        return new JCheckBox(name);
+    }
+
     /**
      * Return the news panel.
      *
@@ -189,9 +201,9 @@ public class LauncherFrame extends JFrame {
      * Popup the menu for the instances.
      *
      * @param component the component
-     * @param x mouse X
-     * @param y mouse Y
-     * @param selected the selected instance, possibly null
+     * @param x         mouse X
+     * @param y         mouse Y
+     * @param selected  the selected instance, possibly null
      */
     private void popupInstanceMenu(Component component, int x, int y, final Instance selected) {
         JPopupMenu popup = new JPopupMenu();

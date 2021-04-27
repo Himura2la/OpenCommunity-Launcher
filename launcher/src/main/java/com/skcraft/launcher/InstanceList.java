@@ -36,7 +36,8 @@ import static com.skcraft.launcher.LauncherUtils.concat;
 public class InstanceList {
 
     private final Launcher launcher;
-    @Getter private final List<Instance> instances = new ArrayList<Instance>();
+    @Getter
+    private final List<Instance> instances = new ArrayList<Instance>();
 
     /**
      * Create a new instance list.

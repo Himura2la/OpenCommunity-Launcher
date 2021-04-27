@@ -12,24 +12,24 @@ import java.util.Map;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InstallProcessor {
-	private String jar;
-	private List<String> classpath;
-	private List<String> args;
-	private Map<String, String> outputs;
+    private String jar;
+    private List<String> classpath;
+    private List<String> args;
+    private Map<String, String> outputs;
 
-	public List<String> resolveArgs(LoaderSubResolver resolver) {
-		return Lists.transform(getArgs(), resolver);
-	}
+    public List<String> resolveArgs(LoaderSubResolver resolver) {
+        return Lists.transform(getArgs(), resolver);
+    }
 
-	public Map<String, String> resolveOutputs(final LoaderSubResolver resolver) {
-		if (getOutputs() == null) return Collections.emptyMap();
+    public Map<String, String> resolveOutputs(final LoaderSubResolver resolver) {
+        if (getOutputs() == null) return Collections.emptyMap();
 
-		HashMap<String, String> result = new HashMap<String, String>();
+        HashMap<String, String> result = new HashMap<String, String>();
 
-		for (Map.Entry<String, String> entry : getOutputs().entrySet()) {
-			result.put(resolver.apply(entry.getKey()), resolver.apply(entry.getValue()));
-		}
+        for (Map.Entry<String, String> entry : getOutputs().entrySet()) {
+            result.put(resolver.apply(entry.getKey()), resolver.apply(entry.getValue()));
+        }
 
-		return result;
-	}
+        return result;
+    }
 }

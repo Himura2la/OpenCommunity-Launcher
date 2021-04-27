@@ -38,8 +38,10 @@ import java.util.concurrent.Callable;
 public class LoginDialog extends JDialog {
 
     private final Launcher launcher;
-    @Getter public Session session;
-    @Getter public Boolean force_update;
+    @Getter
+    public Session session;
+    @Getter
+    public Boolean force_update;
 
     private final JTextField usernameText = new JTextField();
     private final JTextField idCombo = new JTextField();
@@ -53,7 +55,7 @@ public class LoginDialog extends JDialog {
     /**
      * Create a new login dialog.
      *
-     * @param owner the owner
+     * @param owner    the owner
      * @param launcher the launcher
      */
     public LoginDialog(Window owner, @NonNull Launcher launcher) {
@@ -109,10 +111,10 @@ public class LoginDialog extends JDialog {
     public void prepareLogin() {
         final String name = idCombo.getText();
 
-           new OfflineSession(name);
+        new OfflineSession(name);
         String playerName = idCombo.getText();
         if (idCombo.getSelectedText() != null) {
-            playerName = idCombo.getSelectedText().toString();
+            playerName = idCombo.getSelectedText();
         }
         if (playerName.contains("@")) {
             playerName = launcher.getProperties().getProperty("" +
@@ -161,11 +163,11 @@ public class LoginDialog extends JDialog {
             YggdrasilLoginService service = launcher.getYggdrasil();
             Session identity = service.login(username);
 
-                Configuration config = launcher.getConfig();
-                    config.setOfflineEnabled(true);
-                    Persistence.commitAndForget(config);
+            Configuration config = launcher.getConfig();
+            config.setOfflineEnabled(true);
+            Persistence.commitAndForget(config);
 
-                return identity;
+            return identity;
         }
 
         @Override

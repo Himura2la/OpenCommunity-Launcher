@@ -8,7 +8,8 @@ import lombok.NonNull;
 @Data
 @JsonNaming(PropertyNamingStrategy.PascalCaseStrategy.class)
 public class XboxAuthRequest<T> {
-	@NonNull private T properties;
-	private String relyingParty = "http://auth.xboxlive.com";
-	private String tokenType = "JWT";
+    @NonNull
+    private T properties;
+    private String relyingParty = "http://auth.xboxlive.com";
+    private String tokenType = "JWT";
 }

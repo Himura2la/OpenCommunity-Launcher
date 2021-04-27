@@ -18,7 +18,7 @@ public class PlatformSerializer extends JsonSerializer<Platform> {
 
     @Override
     public void serialize(Platform platform, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
-            throws IOException, JsonProcessingException {
+            throws IOException {
         switch (platform) {
             case WINDOWS:
                 jsonGenerator.writeString("windows");

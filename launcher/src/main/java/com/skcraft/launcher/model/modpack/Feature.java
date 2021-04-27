@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.google.common.base.Strings;
 import lombok.Data;
 
-@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="name")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "name")
 @Data
 public class Feature implements Comparable<Feature> {
 
@@ -29,8 +29,9 @@ public class Feature implements Comparable<Feature> {
         @JsonValue
         public String toJson() {
             return name().toLowerCase();
-        };
-    };
+        }
+
+    }
 
     private String name;
     private String description;

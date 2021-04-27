@@ -25,7 +25,8 @@ public class VersionInfo {
     private String mainClass;
     private List<Library> libraries;
 
-    @JsonIgnore private transient boolean overridingArguments;
+    @JsonIgnore
+    private transient boolean overridingArguments;
 
     public void setMinecraftArguments(String argumentString) {
         MinecraftArguments minecraftArguments = new MinecraftArguments();

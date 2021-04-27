@@ -18,7 +18,7 @@ import java.util.UUID;
  */
 public class OfflineSession implements Session {
 
-    private static Map<String, String> dummyProperties = Collections.emptyMap();
+    private static final Map<String, String> dummyProperties = Collections.emptyMap();
 
     @Getter
     private final String name;

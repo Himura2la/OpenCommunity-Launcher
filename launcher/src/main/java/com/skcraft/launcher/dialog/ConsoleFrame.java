@@ -31,18 +31,22 @@ public class ConsoleFrame extends JFrame {
 
     private static ConsoleFrame globalFrame;
 
-    @Getter private final Image trayRunningIcon;
-    @Getter private final Image trayClosedIcon;
+    @Getter
+    private final Image trayRunningIcon;
+    @Getter
+    private final Image trayClosedIcon;
 
-    @Getter private final MessageLog messageLog;
-    @Getter private LinedBoxPanel buttonsPanel;
+    @Getter
+    private final MessageLog messageLog;
+    @Getter
+    private LinedBoxPanel buttonsPanel;
 
     private boolean registeredGlobalLog = false;
 
     /**
      * Construct the frame.
      *
-     * @param numLines number of lines to show at a time
+     * @param numLines     number of lines to show at a time
      * @param colorEnabled true to enable a colored console
      */
     public ConsoleFrame(int numLines, boolean colorEnabled) {
@@ -51,9 +55,9 @@ public class ConsoleFrame extends JFrame {
 
     /**
      * Construct the frame.
-     * 
-     * @param title the title of the window
-     * @param numLines number of lines to show at a time
+     *
+     * @param title        the title of the window
+     * @param numLines     number of lines to show at a time
      * @param colorEnabled true to enable a colored console
      */
     public ConsoleFrame(@NonNull String title, int numLines, boolean colorEnabled) {

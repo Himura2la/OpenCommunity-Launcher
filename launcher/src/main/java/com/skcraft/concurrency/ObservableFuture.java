@@ -27,7 +27,7 @@ public class ObservableFuture<V> implements ListenableFuture<V>, ProgressObserva
     /**
      * Construct a new ObservableFuture.
      *
-     * @param future the delegate future
+     * @param future     the delegate future
      * @param observable the observable
      */
     public ObservableFuture(@NonNull ListenableFuture<V> future, @NonNull ProgressObservable observable) {

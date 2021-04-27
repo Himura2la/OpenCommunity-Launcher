@@ -10,27 +10,27 @@ import java.util.Map;
  */
 @NoArgsConstructor
 public class FeatureList {
-	protected Map<String, Boolean> features = Maps.newHashMap();
+    protected Map<String, Boolean> features = Maps.newHashMap();
 
-	public boolean doesMatch(Map<String, Boolean> features) {
-		for (Map.Entry<String, Boolean> entry : features.entrySet()) {
-			if (!entry.getValue().equals(this.features.get(entry.getKey()))) {
-				return false;
-			}
-		}
+    public boolean doesMatch(Map<String, Boolean> features) {
+        for (Map.Entry<String, Boolean> entry : features.entrySet()) {
+            if (!entry.getValue().equals(this.features.get(entry.getKey()))) {
+                return false;
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	public boolean hasFeature(String key) {
-		return features.get(key) != null && features.get(key);
-	}
+    public boolean hasFeature(String key) {
+        return features.get(key) != null && features.get(key);
+    }
 
-	public static class Mutable extends FeatureList {
-		public void addFeature(String key, boolean value) {
-			features.put(key, value);
-		}
-	}
+    public static class Mutable extends FeatureList {
+        public void addFeature(String key, boolean value) {
+            features.put(key, value);
+        }
+    }
 
-	public static final FeatureList EMPTY = new FeatureList();
+    public static final FeatureList EMPTY = new FeatureList();
 }

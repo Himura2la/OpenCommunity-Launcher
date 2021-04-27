@@ -50,7 +50,9 @@ public class Runner implements Callable<Process>, ProgressObservable {
     private final Instance instance;
     private final Session session;
     private final File extractDir;
-    @Getter @Setter private Environment environment = Environment.getInstance();
+    @Getter
+    @Setter
+    public Environment environment = Environment.getInstance();
 
     private VersionManifest versionManifest;
     private AssetsIndex assetsIndex;
@@ -58,14 +60,14 @@ public class Runner implements Callable<Process>, ProgressObservable {
     private Configuration config;
     private JavaProcessBuilder builder;
     private AssetsRoot assetsRoot;
-    private FeatureList.Mutable featureList;
+    private final FeatureList.Mutable featureList;
 
     /**
      * Create a new instance launcher.
      *
-     * @param launcher the launcher
-     * @param instance the instance
-     * @param session the session
+     * @param launcher   the launcher
+     * @param instance   the instance
+     * @param session    the session
      * @param extractDir the directory to extract to
      */
     public Runner(@NonNull Launcher launcher, @NonNull Instance instance,

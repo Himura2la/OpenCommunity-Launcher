@@ -31,7 +31,7 @@ public interface Deferred<I> extends ListenableFuture<I> {
      * of this Deferred in the default executor.
      *
      * @param task The task
-     * @param <O> The return type of the task
+     * @param <O>  The return type of the task
      * @return The new Deferred
      */
     <O> Deferred<O> thenRun(Callable<O> task);
@@ -42,7 +42,7 @@ public interface Deferred<I> extends ListenableFuture<I> {
      * of this Deferred in the provided executor.
      *
      * @param task The task
-     * @param <O> The return type of the task
+     * @param <O>  The return type of the task
      * @return The new Deferred
      */
     <O> Deferred<O> thenRunAsync(Callable<O> task, ListeningExecutorService executor);
@@ -134,7 +134,7 @@ public interface Deferred<I> extends ListenableFuture<I> {
      *
      * @param onSuccess The success callback
      * @param onFailure The failure callback
-     * @param executor The executor
+     * @param executor  The executor
      * @return The Deferred
      */
     Deferred<I> handleAsync(Callback<I> onSuccess, Callback<Throwable> onFailure, ListeningExecutorService executor);

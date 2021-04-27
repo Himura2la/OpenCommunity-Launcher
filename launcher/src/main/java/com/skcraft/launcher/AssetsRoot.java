@@ -106,7 +106,7 @@ public class AssetsRoot {
                 File virtualPath = new File(destDir, entry.getKey());
                 virtualPath.getParentFile().mkdirs();
                 if (!virtualPath.exists()) {
-                    log.log(Level.INFO, "Copying {0} to {1}...", new Object[] {
+                    log.log(Level.INFO, "Copying {0} to {1}...", new Object[]{
                             objectPath.getAbsolutePath(), virtualPath.getAbsolutePath()});
 
                     if (!objectPath.exists()) {

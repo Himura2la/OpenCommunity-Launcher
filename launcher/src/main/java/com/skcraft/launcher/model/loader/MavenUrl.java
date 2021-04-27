@@ -8,17 +8,17 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MavenUrl {
-	@JsonProperty("maven")
-	private String name;
-	private String url;
-	private String version;
-	private boolean stable;
+    @JsonProperty("maven")
+    private String name;
+    private String url;
+    private String version;
+    private boolean stable;
 
-	public Library toLibrary() {
-		Library library = new Library();
-		library.setName(name);
-		library.setUrl(url);
+    public Library toLibrary() {
+        Library library = new Library();
+        library.setName(name);
+        library.setUrl(url);
 
-		return library;
-	}
+        return library;
+    }
 }

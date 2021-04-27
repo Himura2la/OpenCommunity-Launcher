@@ -45,7 +45,7 @@ class ScramblingSinkFilter extends ByteSink {
             NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
         // These parameters were used for encrypting lastlogin on old official Minecraft launchers
         Random random = new Random(0x29482c2L);
-        byte salt[] = new byte[8];
+        byte[] salt = new byte[8];
         random.nextBytes(salt);
         PBEParameterSpec paramSpec = new PBEParameterSpec(salt, 5);
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");

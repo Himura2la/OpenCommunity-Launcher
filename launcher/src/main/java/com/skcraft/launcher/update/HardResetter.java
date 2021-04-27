@@ -48,7 +48,7 @@ public class HardResetter implements Callable<Instance>, ProgressObservable {
 
         removeDir(new File(instance.getContentDir(), "config"));
         removeDir(new File(instance.getContentDir(), "mods"));
-        
+
         return instance;
     }
 

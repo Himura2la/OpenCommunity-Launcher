@@ -46,7 +46,7 @@ public class FeatureTableModel extends AbstractTableModel {
     public void setValueAt(Object value, int rowIndex, int columnIndex) {
         switch (columnIndex) {
             case 0:
-                features.get(rowIndex).setSelected((boolean) (Boolean) value);
+                features.get(rowIndex).setSelected((Boolean) value);
                 break;
             case 1:
             default:

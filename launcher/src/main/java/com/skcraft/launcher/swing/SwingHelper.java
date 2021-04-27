@@ -84,7 +84,7 @@ public final class SwingHelper {
     /**
      * Opens a system web browser for the given URL.
      *
-     * @param url the URL
+     * @param url             the URL
      * @param parentComponent the component from which to show any errors
      */
     public static void openURL(@NonNull String url, @NonNull Component parentComponent) {
@@ -97,7 +97,7 @@ public final class SwingHelper {
     /**
      * Opens a system web browser for the given URL.
      *
-     * @param url the URL
+     * @param url             the URL
      * @param parentComponent the component from which to show any errors
      */
     public static void openURL(URL url, Component parentComponent) {
@@ -115,8 +115,8 @@ public final class SwingHelper {
      *
      * @param parentComponent the frame from which the dialog is displayed, otherwise
      *                        null to use the default frame
-     * @param message the message to display
-     * @param title the title string for the dialog
+     * @param message         the message to display
+     * @param title           the title string for the dialog
      * @see #showMessageDialog(java.awt.Component, String, String, String, int) for details
      */
     public static void showErrorDialog(Component parentComponent, @NonNull String message,
@@ -130,9 +130,9 @@ public final class SwingHelper {
      *
      * @param parentComponent the frame from which the dialog is displayed, otherwise
      *                        null to use the default frame
-     * @param message the message to display
-     * @param title the title string for the dialog
-     * @param throwable the exception, or null if there is no exception to show
+     * @param message         the message to display
+     * @param title           the title string for the dialog
+     * @param throwable       the exception, or null if there is no exception to show
      * @see #showMessageDialog(java.awt.Component, String, String, String, int) for details
      */
     public static void showErrorDialog(Component parentComponent, @NonNull String message,
@@ -162,10 +162,10 @@ public final class SwingHelper {
      *
      * @param parentComponent the frame from which the dialog is displayed, otherwise
      *                        null to use the default frame
-     * @param message the message to display
-     * @param title the title string for the dialog
-     * @param messageType see {@link javax.swing.JOptionPane#showMessageDialog(java.awt.Component, Object, String, int)}
-     *                    for available message types
+     * @param message         the message to display
+     * @param title           the title string for the dialog
+     * @param messageType     see {@link javax.swing.JOptionPane#showMessageDialog(java.awt.Component, Object, String, int)}
+     *                        for available message types
      */
     public static void showMessageDialog(final Component parentComponent,
                                          @NonNull final String message,
@@ -222,8 +222,8 @@ public final class SwingHelper {
      * Asks the user a binary yes or no question.
      *
      * @param parentComponent the component
-     * @param message the message to display
-     * @param title the title string for the dialog
+     * @param message         the message to display
+     * @param title           the title string for the dialog
      * @return whether 'yes' was selected
      */
     public static boolean confirmDialog(final Component parentComponent,
@@ -260,7 +260,7 @@ public final class SwingHelper {
      *
      * @param component component
      */
-    public static void equalWidth(Component ... component) {
+    public static void equalWidth(Component... component) {
         double widest = 0;
         for (Component comp : component) {
             Dimension dim = comp.getPreferredSize();
@@ -280,7 +280,7 @@ public final class SwingHelper {
      *
      * @param components list of components
      */
-    public static void removeOpaqueness(@NonNull Component ... components) {
+    public static void removeOpaqueness(@NonNull Component... components) {
         for (Component component : components) {
             if (component instanceof JComponent) {
                 JComponent jComponent = (JComponent) component;
@@ -343,7 +343,7 @@ public final class SwingHelper {
      * Focus a component.
      *
      * <p>The focus call happens in {@link javax.swing.SwingUtilities#invokeLater(Runnable)}.</p>
-     * 
+     *
      * @param component the component
      */
     public static void focusLater(@NonNull final Component component) {

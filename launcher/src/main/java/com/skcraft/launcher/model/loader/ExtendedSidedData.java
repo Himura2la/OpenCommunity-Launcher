@@ -6,5 +6,5 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ExtendedSidedData<T> extends SidedData<T> {
-	private T common;
+    private T common;
 }

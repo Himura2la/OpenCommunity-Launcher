@@ -7,6 +7,6 @@ import java.util.HashMap;
 
 @Data
 public class LocalLoader {
-	private final LoaderManifest manifest;
-	private final HashMap<String, DownloadableFile.LocalFile> localFiles;
+    private final LoaderManifest manifest;
+    private final HashMap<String, DownloadableFile.LocalFile> localFiles;
 }

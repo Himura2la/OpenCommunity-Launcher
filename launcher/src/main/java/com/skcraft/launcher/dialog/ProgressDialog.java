@@ -224,7 +224,7 @@ public class ProgressDialog extends JDialog {
                         progressBar.setValue((int) (progress * 1000));
                         progressBar.setIndeterminate(false);
                     } else {
-                        dialog.setTitle( dialog.defaultTitle);
+                        dialog.setTitle(dialog.defaultTitle);
                         progressBar.setIndeterminate(true);
                     }
 

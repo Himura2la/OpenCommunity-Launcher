@@ -68,8 +68,7 @@ public class DirectoryField extends JPanel {
         chooser.setFileFilter(new FileFilter() {
             @Override
             public boolean accept(File pathname) {
-                if (pathname.isDirectory()) return true;
-                return false;
+                return pathname.isDirectory();
             }
 
             @Override

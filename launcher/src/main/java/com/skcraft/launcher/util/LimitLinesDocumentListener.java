@@ -15,20 +15,20 @@ import javax.swing.text.Element;
 
 /**
  * From http://tips4java.wordpress.com/2008/10/15/limit-lines-in-document/
- * 
+ *
  * @author Rob Camick
  */
 public class LimitLinesDocumentListener implements DocumentListener {
     private int maximumLines;
-    private boolean isRemoveFromStart;
+    private final boolean isRemoveFromStart;
     private volatile boolean isRemoving;
 
     /**
      * Specify the number of lines to be stored in the Document. Extra lines
      * will be removed from the start or end of the Document, depending on
      * the boolean value specified.
-     * 
-     * @param maximumLines number of lines
+     *
+     * @param maximumLines      number of lines
      * @param isRemoveFromStart true to remove from the start
      */
     public LimitLinesDocumentListener(int maximumLines,
@@ -40,7 +40,7 @@ public class LimitLinesDocumentListener implements DocumentListener {
 
     /**
      * Set the maximum number of lines to be stored in the Document
-     * 
+     *
      * @param maximumLines number of lines
      */
     public void setLimitLines(int maximumLines) {

@@ -9,7 +9,7 @@ import lombok.Data;
 @JsonNaming(PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TokenResponse {
-	private String tokenType;
-	private String accessToken;
-	private String refreshToken;
+    private String tokenType;
+    private String accessToken;
+    private String refreshToken;
 }

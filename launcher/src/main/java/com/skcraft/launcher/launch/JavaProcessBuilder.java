@@ -27,15 +27,28 @@ public class JavaProcessBuilder {
 
     private static final Pattern argsPattern = Pattern.compile("(?:([^\"]\\S*)|\"(.+?)\")\\s*");
 
-    @Getter @Setter private File jvmPath = JavaRuntimeFinder.findBestJavaPath();
-    @Getter @Setter private int minMemory;
-    @Getter @Setter private int maxMemory;
-    @Getter @Setter private int permGen;
+    @Getter
+    @Setter
+    private File jvmPath = JavaRuntimeFinder.findBestJavaPath();
+    @Getter
+    @Setter
+    private int minMemory;
+    @Getter
+    @Setter
+    private int maxMemory;
+    @Getter
+    @Setter
+    private int permGen;
 
-    @Getter private final List<File> classPath = new ArrayList<File>();
-    @Getter private final List<String> flags = new ArrayList<String>();
-    @Getter private final List<String> args = new ArrayList<String>();
-    @Getter @Setter private String mainClass;
+    @Getter
+    private final List<File> classPath = new ArrayList<File>();
+    @Getter
+    private final List<String> flags = new ArrayList<String>();
+    @Getter
+    private final List<String> args = new ArrayList<String>();
+    @Getter
+    @Setter
+    private String mainClass;
 
     public void tryJvmPath(File path) throws IOException {
         // Try the parent directory
@@ -95,15 +108,15 @@ public class JavaProcessBuilder {
         }
 
         if (minMemory > 0) {
-            command.add("-Xms" + String.valueOf(minMemory) + "M");
+            command.add("-Xms" + minMemory + "M");
         }
 
         if (maxMemory > 0) {
-            command.add("-Xmx" + String.valueOf(maxMemory) + "M");
+            command.add("-Xmx" + maxMemory + "M");
         }
 
         if (permGen > 0) {
-            command.add("-XX:MaxPermSize=" + String.valueOf(permGen) + "M");
+            command.add("-XX:MaxPermSize=" + permGen + "M");
         }
 
         command.add(mainClass);

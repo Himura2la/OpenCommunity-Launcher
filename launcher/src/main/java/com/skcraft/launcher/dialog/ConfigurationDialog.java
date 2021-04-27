@@ -54,7 +54,7 @@ public class ConfigurationDialog extends JDialog {
     /**
      * Create a new configuration dialog.
      *
-     * @param owner the window owner
+     * @param owner    the window owner
      * @param launcher the launcher
      */
     public ConfigurationDialog(Window owner, @NonNull Launcher launcher) {

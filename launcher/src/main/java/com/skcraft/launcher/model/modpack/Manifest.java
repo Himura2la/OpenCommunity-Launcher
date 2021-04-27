@@ -44,7 +44,9 @@ public class Manifest extends BaseManifest {
     private List<Feature> features = new ArrayList<Feature>();
     @JsonManagedReference("manifest")
     private List<ManifestEntry> tasks = Collections.synchronizedList(new ArrayList<ManifestEntry>());
-    @Getter @Setter @JsonIgnore
+    @Getter
+    @Setter
+    @JsonIgnore
     private Installer installer;
     private VersionManifest versionManifest;
     private Map<String, LoaderManifest> loaders = new HashMap<String, LoaderManifest>();

@@ -23,7 +23,7 @@ public final class Deferreds {
      * executor as the default executor.
      *
      * @param future The future
-     * @param <V> The type returned by the future
+     * @param <V>    The type returned by the future
      * @return A new Deferred
      */
     public static <V> Deferred<V> makeDeferred(ListenableFuture<V> future) {
@@ -33,9 +33,9 @@ public final class Deferreds {
     /**
      * Make a new Deferred from the given future.
      *
-     * @param future The future
+     * @param future   The future
      * @param executor The default executor
-     * @param <V> The type returned by the future
+     * @param <V>      The type returned by the future
      * @return A new Deferred
      */
     public static <V> Deferred<V> makeDeferred(ListenableFuture<V> future, ListeningExecutorService executor) {

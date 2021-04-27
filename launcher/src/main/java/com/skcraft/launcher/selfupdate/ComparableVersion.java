@@ -39,15 +39,15 @@ public class ComparableVersion
     private ListItem items;
 
     private interface Item {
-        public static final int INTEGER_ITEM = 0;
-        public static final int STRING_ITEM = 1;
-        public static final int LIST_ITEM = 2;
+        int INTEGER_ITEM = 0;
+        int STRING_ITEM = 1;
+        int LIST_ITEM = 2;
 
-        public int compareTo(Item item);
+        int compareTo(Item item);
 
-        public int getType();
+        int getType();
 
-        public boolean isNull();
+        boolean isNull();
     }
 
     /**
@@ -55,7 +55,7 @@ public class ComparableVersion
      */
     private static class IntegerItem
             implements Item {
-        private Integer value;
+        private final Integer value;
 
         public IntegerItem(Integer i) {
             this.value = i;
@@ -115,9 +115,9 @@ public class ComparableVersion
          * A comparable for the empty-string qualifier. This one is used to determine if a given qualifier makes the
          * version older than one without a qualifier, or more recent.
          */
-        private static Comparable RELEASE_VERSION_INDEX = String.valueOf(_QUALIFIERS.indexOf(""));
+        private static final Comparable RELEASE_VERSION_INDEX = String.valueOf(_QUALIFIERS.indexOf(""));
 
-        private String value;
+        private final String value;
 
         public StringItem(String value, boolean followedByDigit) {
             if (followedByDigit && value.length() == 1) {

@@ -11,8 +11,8 @@ import java.awt.*;
 
 public final class EmptyIcon implements Icon {
 
-    private int width;
-    private int height;
+    private final int width;
+    private final int height;
 
     public EmptyIcon() {
         this(0, 0);

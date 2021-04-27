@@ -12,13 +12,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class ProcessorEntry extends ManifestEntry {
-	private String loaderName;
-	private InstallProcessor processor;
+    private String loaderName;
+    private InstallProcessor processor;
 
-	@Override
-	public void install(Installer installer, InstallLog log, UpdateCache cache, InstallExtras extras) throws Exception {
-		LocalLoader loader = extras.getLoader(loaderName);
+    @Override
+    public void install(Installer installer, InstallLog log, UpdateCache cache, InstallExtras extras) throws Exception {
+        LocalLoader loader = extras.getLoader(loaderName);
 
-		installer.queueLate(new ProcessorTask(processor, loader.getManifest(), getManifest(), loader.getLocalFiles()));
-	}
+        installer.queueLate(new ProcessorTask(processor, loader.getManifest(), getManifest(), loader.getLocalFiles()));
+    }
 }

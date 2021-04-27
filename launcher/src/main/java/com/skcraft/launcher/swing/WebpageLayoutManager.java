@@ -12,7 +12,7 @@ import java.awt.*;
 public class WebpageLayoutManager implements LayoutManager {
 
     private static final int PROGRESS_WIDTH = 100;
-    
+
     @Override
     public void addLayoutComponent(String name, Component comp) {
     }
@@ -37,17 +37,17 @@ public class WebpageLayoutManager implements LayoutManager {
         Insets insets = parent.getInsets();
         int maxWidth = parent.getWidth() - (insets.left + insets.right);
         int maxHeight = parent.getHeight() - (insets.top + insets.bottom);
-        
+
         int numComps = parent.getComponentCount();
-        for (int i = 0 ; i < numComps ; i++) {
+        for (int i = 0; i < numComps; i++) {
             Component comp = parent.getComponent(i);
-            
+
             if (comp instanceof JProgressBar) {
                 Dimension size = comp.getPreferredSize();
                 comp.setLocation((parent.getWidth() - PROGRESS_WIDTH) / 2,
                         (int) (parent.getHeight() / 2.0 - size.height / 2.0));
                 comp.setSize(PROGRESS_WIDTH,
-                        (int) comp.getPreferredSize().height);
+                        comp.getPreferredSize().height);
             } else {
                 comp.setLocation(insets.left, insets.top);
                 comp.setSize(maxWidth, maxHeight);
