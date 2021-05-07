@@ -29,7 +29,7 @@ public class Theme {
     public static final String headerAlignY;
     public static final int headerAlignX;
 
-    static  {
+    static {
         String _subreddit = "";
         int _postCount = 25;
         long _interval = 8000L;
