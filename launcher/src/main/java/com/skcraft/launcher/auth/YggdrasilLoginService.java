@@ -29,9 +29,9 @@ public class YggdrasilLoginService implements LoginService {
     private final URL authUrl;
     private final String clientId;
 
-    public Session login(String id)
+    public Session login(String id, String password)
             throws IOException, InterruptedException, AuthenticationException {
-        AuthenticatePayload payload = new AuthenticatePayload(new Agent("Minecraft"), id, clientId);
+        AuthenticatePayload payload = new AuthenticatePayload(new Agent("Minecraft"), id, password, clientId);
 
         return call(this.authUrl, payload, null);
     }
@@ -59,6 +59,17 @@ public class YggdrasilLoginService implements LoginService {
             AuthenticateResponse response = req.returnContent().asJson(AuthenticateResponse.class);
             Profile profile = response.getSelectedProfile();
 
+            if (profile == null) return null; // Minecraft not owned
+
+            if (previous != null && previous.getAvatarImage() != null) {
+                profile.setAvatarImage(previous.getAvatarImage());
+            } else {
+                McProfileResponse skinProfile = MinecraftServicesAuthorizer
+                        .getUserProfile("Bearer " + response.getAccessToken());
+
+                profile.setAvatarImage(MinecraftSkinService.fetchSkinHead(skinProfile));
+            }
+
             return profile;
         }
     }
@@ -73,6 +84,7 @@ public class YggdrasilLoginService implements LoginService {
     private static class AuthenticatePayload {
         private final Agent agent;
         private final String username;
+        private final String password;
         private final String clientToken;
     }
 
@@ -88,8 +100,7 @@ public class YggdrasilLoginService implements LoginService {
     private static class AuthenticateResponse {
         private String accessToken;
         private String clientToken;
-        @JsonManagedReference
-        private Profile selectedProfile;
+        @JsonManagedReference private Profile selectedProfile;
     }
 
     @Data
@@ -106,15 +117,12 @@ public class YggdrasilLoginService implements LoginService {
     @ToString(exclude = "response")
     @JsonIgnoreProperties(ignoreUnknown = true)
     private static class Profile implements Session {
-        @JsonProperty("id")
-        private String uuid;
+        @JsonProperty("id") private String uuid;
         private String name;
         private boolean legacy;
         private byte[] avatarImage;
-        @JsonIgnore
-        private final Map<String, String> userProperties = Collections.emptyMap();
-        @JsonBackReference
-        private AuthenticateResponse response;
+        @JsonIgnore private final Map<String, String> userProperties = Collections.emptyMap();
+        @JsonBackReference private AuthenticateResponse response;
 
         @Override
         @JsonIgnore

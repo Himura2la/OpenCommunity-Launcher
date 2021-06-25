@@ -27,10 +27,11 @@ public class AccountSelectDialog extends JDialog {
     private final JList<SavedSession> accountList;
     private final JButton loginButton = new JButton(SharedLocale.tr("accounts.play"));
     private final JButton cancelButton = new JButton(SharedLocale.tr("button.cancel"));
+    //private final JButton addCrackedButton = new JButton(SharedLocale.tr("accounts.addCracked"));
     private final JButton addMojangButton = new JButton(SharedLocale.tr("accounts.addMojang"));
     private final JButton addMicrosoftButton = new JButton(SharedLocale.tr("accounts.addMicrosoft"));
     private final JButton removeSelected = new JButton(SharedLocale.tr("accounts.removeSelected"));
-    private final JButton offlineButton = new JButton(SharedLocale.tr("login.playOffline"));
+    //private final JButton offlineButton = new JButton(SharedLocale.tr("login.playOffline"));
     private final LinedBoxPanel buttonsPanel = new LinedBoxPanel(true);
 
     private final Launcher launcher;
@@ -68,18 +69,20 @@ public class AccountSelectDialog extends JDialog {
 
         //Start Buttons
         buttonsPanel.setBorder(BorderFactory.createEmptyBorder(26, 13, 13, 13));
-        if (launcher.getConfig().isOfflineEnabled()) {
+        /*if (launcher.getConfig().isOfflineEnabled()) {
             buttonsPanel.addElement(offlineButton);
-        }
+        }*/
         buttonsPanel.addGlue();
         buttonsPanel.addElement(cancelButton);
         buttonsPanel.addElement(loginButton);
 
         //Login Buttons
-        JPanel loginButtonsRow = new JPanel(new BorderLayout(0, 5));
+        JPanel loginButtonsRow = new JPanel(new BorderLayout(0, 4));
+        //addCrackedButton.setAlignmentX(CENTER_ALIGNMENT);
         addMojangButton.setAlignmentX(CENTER_ALIGNMENT);
         addMicrosoftButton.setAlignmentX(CENTER_ALIGNMENT);
         removeSelected.setAlignmentX(CENTER_ALIGNMENT);
+        //loginButtonsRow.add(addCrackedButton, BorderLayout.NORTH);
         loginButtonsRow.add(addMojangButton, BorderLayout.NORTH);
         loginButtonsRow.add(addMicrosoftButton, BorderLayout.CENTER);
         loginButtonsRow.add(removeSelected, BorderLayout.SOUTH);
@@ -97,6 +100,17 @@ public class AccountSelectDialog extends JDialog {
         loginButton.addActionListener(ev -> attemptExistingLogin(accountList.getSelectedValue()));
         cancelButton.addActionListener(ev -> dispose());
 
+       /* addCrackedButton.addActionListener(ev -> {
+            Session newSession = LoginDialog.showLoginRequest(this, launcher);
+
+                    //setResult(new OfflineSession(getName()));
+            launcher.getAccounts().add(newSession.toSavedSession());
+            if (newSession != null) {
+                launcher.getAccounts().add(newSession.toSavedSession());
+                setResult(newSession);
+            }
+        });*/
+
         addMojangButton.addActionListener(ev -> {
             Session newSession = LoginDialog.showLoginRequest(this, launcher);
 
@@ -108,8 +122,8 @@ public class AccountSelectDialog extends JDialog {
 
         addMicrosoftButton.addActionListener(ev -> attemptMicrosoftLogin());
 
-        offlineButton.addActionListener(ev ->
-                setResult(new OfflineSession(launcher.getProperties().getProperty("offlinePlayerName"))));
+        /*offlineButton.addActionListener(ev ->
+                setResult(new OfflineSession(launcher.getProperties().getProperty("offlinePlayerName"))));*/
 
         removeSelected.addActionListener(ev -> {
             if (accountList.getSelectedValue() != null) {
