@@ -42,14 +42,6 @@ public final class WebpagePanel extends JPanel {
     private Thread thread;
     private Border browserBorder;
 
-    public static WebpagePanel forURL(URL url, boolean lazy) {
-        return new WebpagePanel(url, lazy);
-    }
-
-    public static WebpagePanel forHTML(String html) {
-        return new WebpagePanel(html);
-    }
-
     private WebpagePanel(URL url, boolean lazy) {
         this.url = url;
 
@@ -82,6 +74,14 @@ public final class WebpagePanel extends JPanel {
         } else {
             setDocument();
         }
+    }
+
+    public static WebpagePanel forURL(URL url, boolean lazy) {
+        return new WebpagePanel(url, lazy);
+    }
+
+    public static WebpagePanel forHTML(String html) {
+        return new WebpagePanel(html);
     }
 
     public Border getBrowserBorder() {

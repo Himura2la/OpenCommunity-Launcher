@@ -35,6 +35,35 @@ public class Library {
     // Custom
     private boolean locallyAvailable;
 
+    public static String mavenNameToPath(String mavenName) {
+        List<String> split = Splitter.on(':').splitToList(mavenName);
+        int size = split.size();
+
+        String group = split.get(0);
+        String name = split.get(1);
+        String version = split.get(2);
+        String extension = "jar";
+
+        String fileName = name + "-" + version;
+
+        if (size > 3) {
+            String classifier = split.get(3);
+
+            if (classifier.indexOf("@") != -1) {
+                List<String> parts = Splitter.on('@').splitToList(classifier);
+
+                classifier = parts.get(0);
+                extension = parts.get(1);
+            }
+
+            fileName += "-" + classifier;
+        }
+
+        fileName += "." + extension;
+
+        return Joiner.on('/').join(group.replace('.', '/'), name, version, fileName);
+    }
+
     public boolean matches(Environment environment) {
         boolean allow = false;
 
@@ -145,40 +174,6 @@ public class Library {
         return builder.toHashCode();
     }
 
-    @Data
-    public static class Extract {
-        private List<String> exclude;
-    }
-
-    @Data
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Artifact {
-        private String path;
-        private String url;
-        private String sha1;
-        private int size;
-    }
-
-    @Data
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Downloads {
-        private Artifact artifact;
-        private Map<String, Artifact> classifiers;
-
-        @JsonIgnore
-        public List<Artifact> getAllArtifacts() {
-            List<Artifact> artifacts = Lists.newArrayList();
-
-            if (artifact != null)
-                artifacts.add(artifact);
-
-            if (classifiers != null)
-                artifacts.addAll(classifiers.values());
-
-            return artifacts;
-        }
-    }
-
     /**
      * BACKWARDS COMPATIBILITY:
      * Various sources use the old-style library specification, where there are two keys - "name" and "url",
@@ -226,32 +221,37 @@ public class Library {
         }
     }
 
-    public static String mavenNameToPath(String mavenName) {
-        List<String> split = Splitter.on(':').splitToList(mavenName);
-        int size = split.size();
+    @Data
+    public static class Extract {
+        private List<String> exclude;
+    }
 
-        String group = split.get(0);
-        String name = split.get(1);
-        String version = split.get(2);
-        String extension = "jar";
+    @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Artifact {
+        private String path;
+        private String url;
+        private String sha1;
+        private int size;
+    }
 
-        String fileName = name + "-" + version;
+    @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Downloads {
+        private Artifact artifact;
+        private Map<String, Artifact> classifiers;
 
-        if (size > 3) {
-            String classifier = split.get(3);
+        @JsonIgnore
+        public List<Artifact> getAllArtifacts() {
+            List<Artifact> artifacts = Lists.newArrayList();
 
-            if (classifier.indexOf("@") != -1) {
-                List<String> parts = Splitter.on('@').splitToList(classifier);
+            if (artifact != null)
+                artifacts.add(artifact);
 
-                classifier = parts.get(0);
-                extension = parts.get(1);
-            }
+            if (classifiers != null)
+                artifacts.addAll(classifiers.values());
 
-            fileName += "-" + classifier;
+            return artifacts;
         }
-
-        fileName += "." + extension;
-
-        return Joiner.on('/').join(group.replace('.', '/'), name, version, fileName);
     }
 }

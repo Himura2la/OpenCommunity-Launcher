@@ -109,6 +109,11 @@ public class MicrosoftLoginService implements LoginService {
         return session;
     }
 
+    @FunctionalInterface
+    public interface Receiver {
+        void tell();
+    }
+
     @Data
     public static class Profile implements Session {
         private final McAuthResponse auth;
@@ -168,10 +173,5 @@ public class MicrosoftLoginService implements LoginService {
     private static class TokenError {
         private String error;
         private String errorDescription;
-    }
-
-    @FunctionalInterface
-    public interface Receiver {
-        void tell();
     }
 }

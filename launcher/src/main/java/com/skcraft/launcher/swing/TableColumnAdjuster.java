@@ -41,6 +41,7 @@ import java.util.Map;
 public class TableColumnAdjuster implements PropertyChangeListener, TableModelListener {
     private final JTable table;
     private final int spacing;
+    private final Map<TableColumn, Integer> columnSizes = new HashMap<TableColumn, Integer>();
     private boolean isColumnHeaderIncluded;
     private boolean isColumnDataIncluded;
     private boolean isOnlyAdjustLarger;
@@ -49,7 +50,6 @@ public class TableColumnAdjuster implements PropertyChangeListener, TableModelLi
     @Setter
     private int imageIconWidth = 25;
     private int checkBoxWidth;
-    private final Map<TableColumn, Integer> columnSizes = new HashMap<TableColumn, Integer>();
 
     /*
      *  Specify the table and use default spacing

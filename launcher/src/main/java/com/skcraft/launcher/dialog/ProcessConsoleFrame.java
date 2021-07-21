@@ -25,17 +25,15 @@ import static com.skcraft.launcher.util.SharedLocale.tr;
  */
 public class ProcessConsoleFrame extends ConsoleFrame {
 
+    private final PrintWriter processOut;
     private JButton killButton;
     private JButton minimizeButton;
     private TrayIcon trayIcon;
-
     @Getter
     private Process process;
     @Getter
     @Setter
     private boolean killOnClose;
-
-    private final PrintWriter processOut;
 
     /**
      * Create a new instance of the frame.

@@ -14,6 +14,10 @@ public class SidedData<T> {
     private T client;
     private T server;
 
+    public static <T> SidedData<T> of(T singleValue) {
+        return new SidedData<T>(singleValue, singleValue);
+    }
+
     public T resolveFor(Side side) {
         switch (side) {
             case CLIENT:
@@ -23,9 +27,5 @@ public class SidedData<T> {
             default:
                 return null;
         }
-    }
-
-    public static <T> SidedData<T> of(T singleValue) {
-        return new SidedData<T>(singleValue, singleValue);
     }
 }

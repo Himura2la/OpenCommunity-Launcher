@@ -53,12 +53,12 @@ public class DirectoryField extends JPanel {
         return browseButton;
     }
 
-    public void setPath(String path) {
-        getTextField().setText(path);
-    }
-
     public String getPath() {
         return getTextField().getText();
+    }
+
+    public void setPath(String path) {
+        getTextField().setText(path);
     }
 
     protected JFileChooser getFileChooser() {

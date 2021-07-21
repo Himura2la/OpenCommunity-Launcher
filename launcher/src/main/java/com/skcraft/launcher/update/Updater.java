@@ -44,14 +44,11 @@ public class Updater extends BaseUpdater implements Callable<Instance>, Progress
     private final Installer installer;
     private final Launcher launcher;
     private final Instance instance;
-
+    private final List<URL> librarySources = new ArrayList<URL>();
+    private final List<URL> assetsSources = new ArrayList<URL>();
     @Getter
     @Setter
     private boolean online;
-
-    private final List<URL> librarySources = new ArrayList<URL>();
-    private final List<URL> assetsSources = new ArrayList<URL>();
-
     private ProgressObservable progress = new DefaultProgress(-1, SharedLocale.tr("instanceUpdater.preparingUpdate"));
 
     public Updater(@NonNull Launcher launcher, @NonNull Instance instance) {
@@ -63,6 +60,21 @@ public class Updater extends BaseUpdater implements Callable<Instance>, Progress
 
         librarySources.add(launcher.propUrl("librariesSource"));
         assetsSources.add(launcher.propUrl("assetsSource"));
+    }
+
+    private static VersionManifest fetchVersionManifest(URL url, Manifest manifest) throws IOException, InterruptedException {
+        ReleaseList releases = HttpRequest.get(url)
+                .execute()
+                .expectResponseCode(200)
+                .returnContent()
+                .asJson(ReleaseList.class);
+
+        Version relVersion = releases.find(manifest.getGameVersion());
+        return HttpRequest.get(url(relVersion.getUrl()))
+                .execute()
+                .expectResponseCode(200)
+                .returnContent()
+                .asJson(VersionManifest.class);
     }
 
     @Override
@@ -130,21 +142,6 @@ public class Updater extends BaseUpdater implements Callable<Instance>, Progress
 
         mapper.writeValue(instance.getVersionPath(), version);
         return version;
-    }
-
-    private static VersionManifest fetchVersionManifest(URL url, Manifest manifest) throws IOException, InterruptedException {
-        ReleaseList releases = HttpRequest.get(url)
-                .execute()
-                .expectResponseCode(200)
-                .returnContent()
-                .asJson(ReleaseList.class);
-
-        Version relVersion = releases.find(manifest.getGameVersion());
-        return HttpRequest.get(url(relVersion.getUrl()))
-                .execute()
-                .expectResponseCode(200)
-                .returnContent()
-                .asJson(VersionManifest.class);
     }
 
     /**

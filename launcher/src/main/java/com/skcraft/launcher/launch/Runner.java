@@ -43,24 +43,22 @@ import static com.skcraft.launcher.util.SharedLocale.tr;
 @Log
 public class Runner implements Callable<Process>, ProgressObservable {
 
-    private ProgressObservable progress = new DefaultProgress(0, SharedLocale.tr("runner.preparing"));
-
     private final ObjectMapper mapper = new ObjectMapper();
     private final Launcher launcher;
     private final Instance instance;
     private final Session session;
     private final File extractDir;
+    private final FeatureList.Mutable featureList;
     @Getter
     @Setter
     public Environment environment = Environment.getInstance();
-
+    private ProgressObservable progress = new DefaultProgress(0, SharedLocale.tr("runner.preparing"));
     private VersionManifest versionManifest;
     private AssetsIndex assetsIndex;
     private File virtualAssetsDir;
     private Configuration config;
     private JavaProcessBuilder builder;
     private AssetsRoot assetsRoot;
-    private final FeatureList.Mutable featureList;
 
     /**
      * Create a new instance launcher.

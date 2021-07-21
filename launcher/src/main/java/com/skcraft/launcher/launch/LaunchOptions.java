@@ -24,6 +24,19 @@ public class LaunchOptions {
     private final LaunchListener listener;
     private final Session session;
 
+    public enum UpdatePolicy {
+        NO_UPDATE(false),
+        UPDATE_IF_SESSION_ONLINE(true),
+        ALWAYS_UPDATE(true);
+
+        @Getter
+        private final boolean updateEnabled;
+
+        UpdatePolicy(boolean updateEnabled) {
+            this.updateEnabled = updateEnabled;
+        }
+    }
+
     @Data
     public static class Builder {
 
@@ -63,19 +76,6 @@ public class LaunchOptions {
         public LaunchOptions build() {
             checkNotNull(instance, "instance");
             return new LaunchOptions(window, instance, updatePolicy, listener, session);
-        }
-    }
-
-    public enum UpdatePolicy {
-        NO_UPDATE(false),
-        UPDATE_IF_SESSION_ONLINE(true),
-        ALWAYS_UPDATE(true);
-
-        @Getter
-        private final boolean updateEnabled;
-
-        UpdatePolicy(boolean updateEnabled) {
-            this.updateEnabled = updateEnabled;
         }
     }
 

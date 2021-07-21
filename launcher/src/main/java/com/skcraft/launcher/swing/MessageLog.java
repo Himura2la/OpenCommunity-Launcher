@@ -6,7 +6,6 @@
 
 package com.skcraft.launcher.swing;
 
-import com.skcraft.launcher.LauncherUtils;
 import com.skcraft.launcher.util.LimitLinesDocumentListener;
 import com.skcraft.launcher.util.SimpleLogFormatter;
 
@@ -30,19 +29,16 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 public class MessageLog extends JPanel {
 
     private static final Logger rootLogger = Logger.getLogger("");
-
-    private final int numLines;
-    private final boolean colorEnabled;
-
-    protected JTextComponent textComponent;
-    protected Document document;
-
-    private Handler loggerHandler;
     protected final SimpleAttributeSet defaultAttributes = new SimpleAttributeSet();
     protected final SimpleAttributeSet highlightedAttributes;
     protected final SimpleAttributeSet errorAttributes;
     protected final SimpleAttributeSet infoAttributes;
     protected final SimpleAttributeSet debugAttributes;
+    private final int numLines;
+    private final boolean colorEnabled;
+    protected JTextComponent textComponent;
+    protected Document document;
+    private Handler loggerHandler;
 
     public MessageLog(int numLines, boolean colorEnabled) {
         this.numLines = numLines;

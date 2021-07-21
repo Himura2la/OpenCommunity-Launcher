@@ -25,6 +25,11 @@ public class AboutDialog extends JDialog {
         setLocationRelativeTo(parent);
     }
 
+    public static void showAboutDialog(Window parent) {
+        AboutDialog dialog = new AboutDialog(parent);
+        dialog.setVisible(true);
+    }
+
     private void initComponents() {
         JPanel container = new JPanel();
         container.setLayout(new MigLayout("insets dialog"));
@@ -47,11 +52,6 @@ public class AboutDialog extends JDialog {
 
         okButton.addActionListener(ActionListeners.dispose(this));
         sourceCodeButton.addActionListener(ActionListeners.openURL(this, "https://github.com/Envel-Nikita-Gutsenkov/OpenCommunity-Launcher"));
-    }
-
-    public static void showAboutDialog(Window parent) {
-        AboutDialog dialog = new AboutDialog(parent);
-        dialog.setVisible(true);
     }
 }
 

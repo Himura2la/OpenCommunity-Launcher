@@ -100,7 +100,8 @@ public class YggdrasilLoginService implements LoginService {
     private static class AuthenticateResponse {
         private String accessToken;
         private String clientToken;
-        @JsonManagedReference private Profile selectedProfile;
+        @JsonManagedReference
+        private Profile selectedProfile;
     }
 
     @Data
@@ -117,12 +118,15 @@ public class YggdrasilLoginService implements LoginService {
     @ToString(exclude = "response")
     @JsonIgnoreProperties(ignoreUnknown = true)
     private static class Profile implements Session {
-        @JsonProperty("id") private String uuid;
+        @JsonIgnore
+        private final Map<String, String> userProperties = Collections.emptyMap();
+        @JsonProperty("id")
+        private String uuid;
         private String name;
         private boolean legacy;
         private byte[] avatarImage;
-        @JsonIgnore private final Map<String, String> userProperties = Collections.emptyMap();
-        @JsonBackReference private AuthenticateResponse response;
+        @JsonBackReference
+        private AuthenticateResponse response;
 
         @Override
         @JsonIgnore

@@ -33,15 +33,19 @@ public class HttpDownloader implements Downloader {
     private final HashFunction hf = Hashing.sha1();
 
     private final File tempDir;
-    @Getter @Setter private int threadCount = 6;
-    @Getter @Setter private int retryDelay = 2000;
-    @Getter @Setter private int tryCount = 3;
-
-    private List<HttpDownloadJob> queue = new ArrayList<HttpDownloadJob>();
     private final Set<String> usedKeys = new HashSet<String>();
-
     private final List<HttpDownloadJob> running = new ArrayList<HttpDownloadJob>();
     private final List<HttpDownloadJob> failed = new ArrayList<HttpDownloadJob>();
+    @Getter
+    @Setter
+    private int threadCount = 6;
+    @Getter
+    @Setter
+    private int retryDelay = 2000;
+    @Getter
+    @Setter
+    private int tryCount = 3;
+    private List<HttpDownloadJob> queue = new ArrayList<HttpDownloadJob>();
     private long downloaded = 0;
     private long total = 0;
     private int left = 0;
@@ -103,7 +107,7 @@ public class HttpDownloader implements Downloader {
      * Prevent further downloads from being queued and download queued files.
      *
      * @throws InterruptedException thrown on interruption
-     * @throws IOException thrown on I/O error
+     * @throws IOException          thrown on I/O error
      */
     public void execute() throws InterruptedException, IOException {
         synchronized (this) {
@@ -165,7 +169,7 @@ public class HttpDownloader implements Downloader {
                 builder.append(job.getStatus());
             }
             return tr("downloader.downloadingList", queue.size(), left, failed.size()) +
-                    builder.toString() +
+                    builder +
                     "\n" + failMessage;
         } else {
             return SharedLocale.tr("downloader.noDownloads");
@@ -176,7 +180,8 @@ public class HttpDownloader implements Downloader {
         private final File destFile;
         private final List<URL> urls;
         private final long size;
-        @Getter private String name;
+        @Getter
+        private final String name;
         private HttpRequest request;
 
         private HttpDownloadJob(File destFile, List<URL> urls, long size, String name) {

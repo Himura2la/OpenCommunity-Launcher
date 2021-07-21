@@ -37,9 +37,9 @@ import java.util.logging.Level;
 @Log
 public final class Persistence {
 
+    public static final DefaultPrettyPrinter L2F_LIST_PRETTY_PRINTER;
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final WeakHashMap<Object, ByteSink> bound = new WeakHashMap<Object, ByteSink>();
-    public static final DefaultPrettyPrinter L2F_LIST_PRETTY_PRINTER;
 
     static {
         L2F_LIST_PRETTY_PRINTER = new DefaultPrettyPrinter();

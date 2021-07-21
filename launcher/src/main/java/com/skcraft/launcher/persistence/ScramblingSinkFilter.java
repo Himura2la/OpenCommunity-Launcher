@@ -29,17 +29,6 @@ class ScramblingSinkFilter extends ByteSink {
         this.key = key;
     }
 
-    @Override
-    public OutputStream openStream() throws IOException {
-        Cipher cipher = null;
-        try {
-            cipher = getCipher(Cipher.ENCRYPT_MODE, key);
-        } catch (Throwable e) {
-            throw new IOException("Failed to create cipher", e);
-        }
-        return new CipherOutputStream(delegate.openStream(), cipher);
-    }
-
     public static Cipher getCipher(int mode, String password)
             throws InvalidKeySpecException, NoSuchAlgorithmException,
             NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
@@ -53,6 +42,17 @@ class ScramblingSinkFilter extends ByteSink {
         Cipher cipher = Cipher.getInstance("PBEWithMD5AndDES");
         cipher.init(mode, key, paramSpec);
         return cipher;
+    }
+
+    @Override
+    public OutputStream openStream() throws IOException {
+        Cipher cipher = null;
+        try {
+            cipher = getCipher(Cipher.ENCRYPT_MODE, key);
+        } catch (Throwable e) {
+            throw new IOException("Failed to create cipher", e);
+        }
+        return new CipherOutputStream(delegate.openStream(), cipher);
     }
 
 }

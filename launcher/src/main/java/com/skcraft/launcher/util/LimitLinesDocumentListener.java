@@ -19,8 +19,8 @@ import javax.swing.text.Element;
  * @author Rob Camick
  */
 public class LimitLinesDocumentListener implements DocumentListener {
-    private int maximumLines;
     private final boolean isRemoveFromStart;
+    private int maximumLines;
     private volatile boolean isRemoving;
 
     /**

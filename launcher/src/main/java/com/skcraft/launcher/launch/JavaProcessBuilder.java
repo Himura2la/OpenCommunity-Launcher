@@ -26,7 +26,12 @@ import java.util.regex.Pattern;
 public class JavaProcessBuilder {
 
     private static final Pattern argsPattern = Pattern.compile("(?:([^\"]\\S*)|\"(.+?)\")\\s*");
-
+    @Getter
+    private final List<File> classPath = new ArrayList<File>();
+    @Getter
+    private final List<String> flags = new ArrayList<String>();
+    @Getter
+    private final List<String> args = new ArrayList<String>();
     @Getter
     @Setter
     private File jvmPath = JavaRuntimeFinder.findBestJavaPath();
@@ -39,16 +44,26 @@ public class JavaProcessBuilder {
     @Getter
     @Setter
     private int permGen;
-
-    @Getter
-    private final List<File> classPath = new ArrayList<File>();
-    @Getter
-    private final List<String> flags = new ArrayList<String>();
-    @Getter
-    private final List<String> args = new ArrayList<String>();
     @Getter
     @Setter
     private String mainClass;
+
+    /**
+     * Split the given string as simple command line arguments.
+     *
+     * <p>This is not to be used for security purposes.</p>
+     *
+     * @param str the string
+     * @return the split args
+     */
+    public static List<String> splitArgs(String str) {
+        Matcher matcher = argsPattern.matcher(str);
+        List<String> parts = new ArrayList<String>();
+        while (matcher.find()) {
+            parts.add(matcher.group(1));
+        }
+        return parts;
+    }
 
     public void tryJvmPath(File path) throws IOException {
         // Try the parent directory
@@ -126,23 +141,6 @@ public class JavaProcessBuilder {
         }
 
         return command;
-    }
-
-    /**
-     * Split the given string as simple command line arguments.
-     *
-     * <p>This is not to be used for security purposes.</p>
-     *
-     * @param str the string
-     * @return the split args
-     */
-    public static List<String> splitArgs(String str) {
-        Matcher matcher = argsPattern.matcher(str);
-        List<String> parts = new ArrayList<String>();
-        while (matcher.find()) {
-            parts.add(matcher.group(1));
-        }
-        return parts;
     }
 
 }

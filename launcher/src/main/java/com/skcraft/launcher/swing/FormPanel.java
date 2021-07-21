@@ -15,8 +15,6 @@ public class FormPanel extends JPanel {
     private static final GridBagConstraints fieldConstraints;
     private static final GridBagConstraints wideFieldConstraints;
 
-    private final GridBagLayout layout;
-
     static {
         fieldConstraints = new GridBagConstraints();
         fieldConstraints.fill = GridBagConstraints.HORIZONTAL;
@@ -32,6 +30,8 @@ public class FormPanel extends JPanel {
         wideFieldConstraints = (GridBagConstraints) fieldConstraints.clone();
         wideFieldConstraints.insets = new Insets(7, 2, 1, 2);
     }
+
+    private final GridBagLayout layout;
 
     public FormPanel() {
         setLayout(layout = new GridBagLayout());

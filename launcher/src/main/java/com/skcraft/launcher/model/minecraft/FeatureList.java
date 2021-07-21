@@ -10,6 +10,7 @@ import java.util.Map;
  */
 @NoArgsConstructor
 public class FeatureList {
+    public static final FeatureList EMPTY = new FeatureList();
     protected Map<String, Boolean> features = Maps.newHashMap();
 
     public boolean doesMatch(Map<String, Boolean> features) {
@@ -31,6 +32,4 @@ public class FeatureList {
             features.put(key, value);
         }
     }
-
-    public static final FeatureList EMPTY = new FeatureList();
 }

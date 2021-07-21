@@ -17,6 +17,25 @@ public final class SimpleLogFormatter extends Formatter {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
+    public static void configureGlobalLogger() {
+        Logger globalLogger = Logger.getLogger("");
+
+        // Set formatter
+        for (Handler handler : globalLogger.getHandlers()) {
+            handler.setFormatter(new SimpleLogFormatter());
+        }
+
+        // Set level
+        String logLevel = System.getProperty(
+                SimpleLogFormatter.class.getCanonicalName() + ".logLevel", "INFO");
+        try {
+            Level level = Level.parse(logLevel);
+            globalLogger.setLevel(level);
+        } catch (IllegalArgumentException e) {
+            log.log(Level.WARNING, "Invalid log level of " + logLevel, e);
+        }
+    }
+
     @Override
     public String format(LogRecord record) {
         StringBuilder sb = new StringBuilder();
@@ -39,25 +58,6 @@ public final class SimpleLogFormatter extends Formatter {
         }
 
         return sb.toString();
-    }
-
-    public static void configureGlobalLogger() {
-        Logger globalLogger = Logger.getLogger("");
-
-        // Set formatter
-        for (Handler handler : globalLogger.getHandlers()) {
-            handler.setFormatter(new SimpleLogFormatter());
-        }
-
-        // Set level
-        String logLevel = System.getProperty(
-                SimpleLogFormatter.class.getCanonicalName() + ".logLevel", "INFO");
-        try {
-            Level level = Level.parse(logLevel);
-            globalLogger.setLevel(level);
-        } catch (IllegalArgumentException e) {
-            log.log(Level.WARNING, "Invalid log level of " + logLevel, e);
-        }
     }
 
 }

@@ -8,16 +8,11 @@ import com.skcraft.concurrency.ProgressObservable;
 import com.skcraft.concurrency.SettableProgress;
 import com.skcraft.launcher.Launcher;
 import com.skcraft.launcher.auth.*;
-import com.skcraft.launcher.auth.LoginService;
-import com.skcraft.launcher.auth.OfflineSession;
-import com.skcraft.launcher.auth.SavedSession;
-import com.skcraft.launcher.auth.Session;
 import com.skcraft.launcher.persistence.Persistence;
 import com.skcraft.launcher.swing.LinedBoxPanel;
 import com.skcraft.launcher.swing.SwingHelper;
 import com.skcraft.launcher.util.SharedLocale;
 import com.skcraft.launcher.util.SwingExecutor;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import javax.swing.*;
@@ -51,6 +46,19 @@ public class AccountSelectDialog extends JDialog {
         setResizable(false);
         pack();
         setLocationRelativeTo(owner);
+    }
+
+    public static Session showAccountRequest(Window owner, Launcher launcher) {
+        AccountSelectDialog dialog = new AccountSelectDialog(owner, launcher);
+        dialog.setVisible(true);
+
+        if (dialog.selected != null && dialog.selected.isOnline()) {
+            launcher.getAccounts().update(dialog.selected.toSavedSession());
+        }
+
+        Persistence.commitAndForget(launcher.getAccounts());
+
+        return dialog.selected;
     }
 
     private void initComponents() {
@@ -144,19 +152,6 @@ public class AccountSelectDialog extends JDialog {
     public void dispose() {
         accountList.setModel(new DefaultListModel<>());
         super.dispose();
-    }
-
-    public static Session showAccountRequest(Window owner, Launcher launcher) {
-        AccountSelectDialog dialog = new AccountSelectDialog(owner, launcher);
-        dialog.setVisible(true);
-
-        if (dialog.selected != null && dialog.selected.isOnline()) {
-            launcher.getAccounts().update(dialog.selected.toSavedSession());
-        }
-
-        Persistence.commitAndForget(launcher.getAccounts());
-
-        return dialog.selected;
     }
 
     private void setResult(Session result) {

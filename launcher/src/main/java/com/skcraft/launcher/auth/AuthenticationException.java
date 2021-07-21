@@ -28,6 +28,7 @@ public class AuthenticationException extends LauncherException {
         super(message, message);
         this.invalidatedSession = invalidatedSession;
     }
+
     public AuthenticationException(Throwable cause, String localizedMessage) {
         super(cause, localizedMessage);
     }

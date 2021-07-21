@@ -80,6 +80,28 @@ public class ConsoleFrame extends JFrame {
         });
     }
 
+    public static void showMessages() {
+        ConsoleFrame frame = globalFrame;
+        if (frame == null) {
+            frame = new ConsoleFrame(10000, false);
+            globalFrame = frame;
+            frame.setTitle(SharedLocale.tr("console.launcherConsoleTitle"));
+            frame.registerLoggerHandler();
+            frame.setVisible(true);
+        } else {
+            frame.setVisible(true);
+            frame.registerLoggerHandler();
+            frame.requestFocus();
+        }
+    }
+
+    public static void hideMessages() {
+        ConsoleFrame frame = globalFrame;
+        if (frame != null) {
+            frame.setVisible(false);
+        }
+    }
+
     /**
      * Add components to the frame.
      */
@@ -149,28 +171,6 @@ public class ConsoleFrame extends JFrame {
                 messageLog.log(tr("console.pasteFailed", err), messageLog.asError());
             }
         });
-    }
-
-    public static void showMessages() {
-        ConsoleFrame frame = globalFrame;
-        if (frame == null) {
-            frame = new ConsoleFrame(10000, false);
-            globalFrame = frame;
-            frame.setTitle(SharedLocale.tr("console.launcherConsoleTitle"));
-            frame.registerLoggerHandler();
-            frame.setVisible(true);
-        } else {
-            frame.setVisible(true);
-            frame.registerLoggerHandler();
-            frame.requestFocus();
-        }
-    }
-
-    public static void hideMessages() {
-        ConsoleFrame frame = globalFrame;
-        if (frame != null) {
-            frame.setVisible(false);
-        }
     }
 
 }

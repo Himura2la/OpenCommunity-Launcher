@@ -41,6 +41,21 @@ public class Rule {
         return action == Action.ALLOW;
     }
 
+    public enum Action {
+        ALLOW,
+        DISALLOW;
+
+        @JsonCreator
+        public static Action fromJson(String text) {
+            return valueOf(text.toUpperCase());
+        }
+
+        @JsonValue
+        public String toJson() {
+            return name().toLowerCase();
+        }
+    }
+
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class OS {
@@ -57,21 +72,6 @@ public class Rule {
         public boolean matches(Environment environment) {
             return (getPlatform() == null || getPlatform().equals(environment.getPlatform())) &&
                     (getVersion() == null || getVersion().matcher(environment.getPlatformVersion()).matches());
-        }
-    }
-
-    public enum Action {
-        ALLOW,
-        DISALLOW;
-
-        @JsonCreator
-        public static Action fromJson(String text) {
-            return valueOf(text.toUpperCase());
-        }
-
-        @JsonValue
-        public String toJson() {
-            return name().toLowerCase();
         }
     }
 }

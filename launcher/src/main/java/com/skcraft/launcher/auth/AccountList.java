@@ -24,11 +24,10 @@ import java.util.List;
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AccountList implements ListModel<SavedSession> {
-    private List<SavedSession> accounts = Lists.newArrayList();
-    private String clientId = RandomStringUtils.randomAlphanumeric(24);
-
     @JsonIgnore
     private final ListListenerReducer listeners = new ListListenerReducer();
+    private List<SavedSession> accounts = Lists.newArrayList();
+    private String clientId = RandomStringUtils.randomAlphanumeric(24);
 
     public synchronized void add(SavedSession session) {
         accounts.add(session);

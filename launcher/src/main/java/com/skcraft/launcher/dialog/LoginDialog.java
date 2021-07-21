@@ -17,15 +17,19 @@ import com.skcraft.launcher.auth.OfflineSession;
 import com.skcraft.launcher.auth.Session;
 import com.skcraft.launcher.auth.YggdrasilLoginService;
 import com.skcraft.launcher.persistence.Persistence;
-import com.skcraft.launcher.swing.*;
+import com.skcraft.launcher.swing.FormPanel;
+import com.skcraft.launcher.swing.LinedBoxPanel;
+import com.skcraft.launcher.swing.SwingHelper;
+import com.skcraft.launcher.swing.TextFieldPopupMenu;
 import com.skcraft.launcher.util.SharedLocale;
 import com.skcraft.launcher.util.SwingExecutor;
-import lombok.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Optional;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -38,8 +42,6 @@ import java.util.concurrent.Callable;
 public class LoginDialog extends JDialog {
 
     private final Launcher launcher;
-    @Getter private Session session;
-
     private final JLabel message = new JLabel(SharedLocale.tr("login.defaultMessage"));
     private final JTextField usernameText = new JTextField();
     private final JPasswordField passwordText = new JPasswordField();
@@ -48,11 +50,13 @@ public class LoginDialog extends JDialog {
     private final JButton cancelButton = new JButton(SharedLocale.tr("button.cancel"));
     private final FormPanel formPanel = new FormPanel();
     private final LinedBoxPanel buttonsPanel = new LinedBoxPanel(true);
+    @Getter
+    private Session session;
 
     /**
      * Create a new login dialog.
      *
-     * @param owner the owner
+     * @param owner    the owner
      * @param launcher the launcher
      */
     public LoginDialog(Window owner, @NonNull Launcher launcher, Optional<ReloginDetails> reloginDetails) {
@@ -77,6 +81,16 @@ public class LoginDialog extends JDialog {
         });
 
         reloginDetails.ifPresent(details -> message.setText(details.message));
+    }
+
+    public static Session showLoginRequest(Window owner, Launcher launcher) {
+        return showLoginRequest(owner, launcher, null);
+    }
+
+    public static Session showLoginRequest(Window owner, Launcher launcher, ReloginDetails reloginDetails) {
+        LoginDialog dialog = new LoginDialog(owner, launcher, Optional.ofNullable(reloginDetails));
+        dialog.setVisible(true);
+        return dialog.getSession();
     }
 
     @SuppressWarnings("unchecked")
@@ -149,14 +163,10 @@ public class LoginDialog extends JDialog {
         dispose();
     }
 
-    public static Session showLoginRequest(Window owner, Launcher launcher) {
-        return showLoginRequest(owner, launcher, null);
-    }
-
-    public static Session showLoginRequest(Window owner, Launcher launcher, ReloginDetails reloginDetails) {
-        LoginDialog dialog = new LoginDialog(owner, launcher, Optional.ofNullable(reloginDetails));
-        dialog.setVisible(true);
-        return dialog.getSession();
+    @Data
+    public static class ReloginDetails {
+        private final String username;
+        private final String message;
     }
 
     @RequiredArgsConstructor
@@ -194,11 +204,5 @@ public class LoginDialog extends JDialog {
         public String getStatus() {
             return SharedLocale.tr("login.loggingInStatus");
         }
-    }
-
-    @Data
-    public static class ReloginDetails {
-        private final String username;
-        private final String message;
     }
 }

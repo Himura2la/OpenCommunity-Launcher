@@ -65,6 +65,15 @@ public abstract class BaseUpdater {
         this.launcher = launcher;
     }
 
+    private static void writeDataFile(File path, Object object) {
+        try {
+            Persistence.write(path, object);
+        } catch (IOException e) {
+            log.log(Level.WARNING, "Failed to write to " + path.getAbsolutePath() +
+                    " for object " + object.getClass().getCanonicalName(), e);
+        }
+    }
+
     protected void complete() {
         for (Runnable runnable : executeOnCompletion) {
             runnable.run();
@@ -270,15 +279,6 @@ public abstract class BaseUpdater {
                     }
                 }
             }
-        }
-    }
-
-    private static void writeDataFile(File path, Object object) {
-        try {
-            Persistence.write(path, object);
-        } catch (IOException e) {
-            log.log(Level.WARNING, "Failed to write to " + path.getAbsolutePath() +
-                    " for object " + object.getClass().getCanonicalName(), e);
         }
     }
 

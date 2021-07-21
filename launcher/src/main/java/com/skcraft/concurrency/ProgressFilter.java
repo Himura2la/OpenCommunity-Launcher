@@ -18,6 +18,10 @@ public class ProgressFilter implements ProgressObservable {
         this.portion = portion;
     }
 
+    public static ProgressObservable between(ProgressObservable delegate, double from, double to) {
+        return new ProgressFilter(delegate, from, to - from);
+    }
+
     @Override
     public double getProgress() {
         return offset + portion * Math.max(0, delegate.getProgress());
@@ -26,10 +30,6 @@ public class ProgressFilter implements ProgressObservable {
     @Override
     public String getStatus() {
         return delegate.getStatus();
-    }
-
-    public static ProgressObservable between(ProgressObservable delegate, double from, double to) {
-        return new ProgressFilter(delegate, from, to - from);
     }
 
 }

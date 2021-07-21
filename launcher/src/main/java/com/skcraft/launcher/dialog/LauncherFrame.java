@@ -41,20 +41,19 @@ import static com.skcraft.launcher.util.SharedLocale.tr;
 @Log
 public class LauncherFrame extends JFrame {
 
-    private final Launcher launcher;
-
     @Getter
     protected final InstanceTable instancesTable = new InstanceTable();
     protected final InstanceTableModel instancesModel;
     @Getter
     protected final JScrollPane instanceScroll = new JScrollPane(instancesTable);
-    protected WebpagePanel webView;
-    protected JSplitPane splitPane;
     protected final JButton launchButton = createPrimaryButton(SharedLocale.tr("launcher.launch"));
     protected final JButton refreshButton = new JButton(SharedLocale.tr("launcher.checkForUpdates"));
     protected final JButton optionsButton = createPrimaryButton(SharedLocale.tr("launcher.options"));
     protected final JButton selfUpdateButton = new JButton(SharedLocale.tr("launcher.updateLauncher"));
     protected final JCheckBox updateCheck = createCheckBox(SharedLocale.tr("launcher.downloadUpdates"));
+    private final Launcher launcher;
+    protected WebpagePanel webView;
+    protected JSplitPane splitPane;
 
     /**
      * Create a new frame.
