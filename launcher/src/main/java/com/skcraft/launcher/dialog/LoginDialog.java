@@ -21,9 +21,11 @@ import com.skcraft.launcher.swing.*;
 import com.skcraft.launcher.util.SharedLocale;
 import com.skcraft.launcher.util.SwingExecutor;
 import lombok.*;
+import lombok.Data;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Optional;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;

@@ -254,6 +254,15 @@ public class HttpRequest implements Closeable, ProgressObservable {
         return inputStream;
     }
 
+    public boolean isSuccessCode() throws IOException {
+        int code = getResponseCode();
+        return code >= 200 && code < 300;
+    }
+
+    public boolean isConnected() {
+        return conn != null;
+    }
+
     /**
      * Buffer the returned response.
      *
@@ -265,6 +274,7 @@ public class HttpRequest implements Closeable, ProgressObservable {
         if (inputStream == null) {
             throw new IllegalArgumentException("No input stream available");
         }
+
 
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();

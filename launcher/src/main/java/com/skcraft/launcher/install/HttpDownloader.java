@@ -1,9 +1,3 @@
-/*
- * SK's Minecraft Launcher
- * Copyright (C) 2010-2014 Albert Pham <http://www.sk89q.com> and contributors
- * Please see LICENSE.txt for license information.
- */
-
 package com.skcraft.launcher.install;
 
 import com.google.common.base.Charsets;
@@ -39,15 +33,9 @@ public class HttpDownloader implements Downloader {
     private final HashFunction hf = Hashing.sha1();
 
     private final File tempDir;
-    @Getter
-    @Setter
-    private int threadCount = 6;
-    @Getter
-    @Setter
-    private int retryDelay = 2000;
-    @Getter
-    @Setter
-    private int tryCount = 3;
+    @Getter @Setter private int threadCount = 6;
+    @Getter @Setter private int retryDelay = 2000;
+    @Getter @Setter private int tryCount = 3;
 
     private List<HttpDownloadJob> queue = new ArrayList<HttpDownloadJob>();
     private final Set<String> usedKeys = new HashSet<String>();
@@ -115,7 +103,7 @@ public class HttpDownloader implements Downloader {
      * Prevent further downloads from being queued and download queued files.
      *
      * @throws InterruptedException thrown on interruption
-     * @throws IOException          thrown on I/O error
+     * @throws IOException thrown on I/O error
      */
     public void execute() throws InterruptedException, IOException {
         synchronized (this) {
@@ -177,7 +165,7 @@ public class HttpDownloader implements Downloader {
                 builder.append(job.getStatus());
             }
             return tr("downloader.downloadingList", queue.size(), left, failed.size()) +
-                    builder +
+                    builder.toString() +
                     "\n" + failMessage;
         } else {
             return SharedLocale.tr("downloader.noDownloads");
@@ -188,8 +176,7 @@ public class HttpDownloader implements Downloader {
         private final File destFile;
         private final List<URL> urls;
         private final long size;
-        @Getter
-        private final String name;
+        @Getter private String name;
         private HttpRequest request;
 
         private HttpDownloadJob(File destFile, List<URL> urls, long size, String name) {
@@ -245,7 +232,6 @@ public class HttpDownloader implements Downloader {
             int trial = 0;
             boolean first = true;
             IOException lastException = null;
-            HttpRequest.PartialDownloadInfo retryDetails = null;
 
             do {
                 for (URL url : urls) {
@@ -256,22 +242,36 @@ public class HttpDownloader implements Downloader {
                     first = false;
 
                     try {
-                        request = HttpRequest.get(url);
-                        request.setResumeInfo(retryDetails).execute().expectResponseCode(200).saveContent(file);
+                        tryDownloadFrom(url, file, null, 0);
                         return;
                     } catch (IOException e) {
                         lastException = e;
-                        log.log(Level.WARNING, "Failed to download " + url, e);
-
-                        Optional<HttpRequest.PartialDownloadInfo> byteRangeSupport = request.canRetryPartial();
-                        if (byteRangeSupport.isPresent()) {
-                            retryDetails = byteRangeSupport.get();
-                        }
                     }
                 }
             } while (++trial < tryCount);
 
             throw new IOException("Failed to download from " + urls, lastException);
+        }
+
+        private void tryDownloadFrom(URL url, File file, HttpRequest.PartialDownloadInfo retryDetails, int tries)
+                throws InterruptedException, IOException {
+            try {
+                request = HttpRequest.get(url);
+                request.setResumeInfo(retryDetails).execute().expectResponseCode(200).saveContent(file);
+            } catch (IOException e) {
+                log.log(Level.WARNING, "Failed to download " + url, e);
+
+                // We only want to try to resume a partial download if the request succeeded before
+                // throwing an exception halfway through. If it didn't succeed, just throw the error.
+                if (tries >= tryCount || !request.isConnected() || !request.isSuccessCode()) {
+                    throw e;
+                }
+
+                Optional<HttpRequest.PartialDownloadInfo> byteRangeSupport = request.canRetryPartial();
+                if (byteRangeSupport.isPresent()) {
+                    tryDownloadFrom(url, file, byteRangeSupport.get(), tries + 1);
+                }
+            }
         }
 
         @Override

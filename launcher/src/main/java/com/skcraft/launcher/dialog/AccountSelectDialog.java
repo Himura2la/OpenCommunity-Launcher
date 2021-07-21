@@ -7,6 +7,7 @@ import com.skcraft.concurrency.ObservableFuture;
 import com.skcraft.concurrency.ProgressObservable;
 import com.skcraft.concurrency.SettableProgress;
 import com.skcraft.launcher.Launcher;
+import com.skcraft.launcher.auth.*;
 import com.skcraft.launcher.auth.LoginService;
 import com.skcraft.launcher.auth.OfflineSession;
 import com.skcraft.launcher.auth.SavedSession;
@@ -115,7 +116,7 @@ public class AccountSelectDialog extends JDialog {
             Session newSession = LoginDialog.showLoginRequest(this, launcher);
 
             if (newSession != null) {
-                launcher.getAccounts().add(newSession.toSavedSession());
+                launcher.getAccounts().update(newSession.toSavedSession());
                 setResult(newSession);
             }
         });
@@ -172,7 +173,7 @@ public class AccountSelectDialog extends JDialog {
                     progress.set(SharedLocale.tr("login.loggingInStatus"), -1));
 
             if (newSession != null) {
-                launcher.getAccounts().add(newSession.toSavedSession());
+                launcher.getAccounts().update(newSession.toSavedSession());
                 setResult(newSession);
             }
 
@@ -203,7 +204,17 @@ public class AccountSelectDialog extends JDialog {
 
             @Override
             public void onFailure(Throwable t) {
-                t.printStackTrace();
+                if (t instanceof AuthenticationException) {
+                    if (((AuthenticationException) t).isInvalidatedSession()) {
+                        // Just need to log in again
+                        LoginDialog.ReloginDetails details = new LoginDialog.ReloginDetails(session.getUsername(), t.getLocalizedMessage());
+                        Session newSession = LoginDialog.showLoginRequest(AccountSelectDialog.this, launcher, details);
+
+                        setResult(newSession);
+                    }
+                } else {
+                    SwingHelper.showErrorDialog(AccountSelectDialog.this, t.getLocalizedMessage(), SharedLocale.tr("errorTitle"), t);
+                }
             }
         }, SwingExecutor.INSTANCE);
 
