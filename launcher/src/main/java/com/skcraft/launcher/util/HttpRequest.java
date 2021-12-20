@@ -329,10 +329,6 @@ public class HttpRequest implements Closeable, ProgressObservable {
         return code >= 200 && code < 300;
     }
 
-    public boolean isConnected() {
-        return conn != null;
-    }
-
     /**
      * Check if a connection was ever made
      *
