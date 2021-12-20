@@ -2,6 +2,7 @@ package com.skcraft.launcher.model.loader;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.collect.Lists;
+import com.skcraft.launcher.model.minecraft.Side;
 import lombok.Data;
 
 import java.util.Collections;
@@ -12,10 +13,11 @@ import java.util.Map;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InstallProcessor {
-    private String jar;
-    private List<String> classpath;
-    private List<String> args;
-    private Map<String, String> outputs;
+	private String jar;
+	private List<String> classpath;
+	private List<String> args;
+	private Map<String, String> outputs;
+	private List<String> sides;
 
     public List<String> resolveArgs(LoaderSubResolver resolver) {
         return Lists.transform(getArgs(), resolver);
@@ -30,6 +32,21 @@ public class InstallProcessor {
             result.put(resolver.apply(entry.getKey()), resolver.apply(entry.getValue()));
         }
 
-        return result;
-    }
+		return result;
+	}
+
+	public boolean shouldRunOn(Side side) {
+		if (sides == null) {
+			return true;
+		}
+
+		switch (side) {
+			case CLIENT:
+				return sides.contains("client");
+			case SERVER:
+				return sides.contains("server");
+		}
+
+		return false;
+	}
 }

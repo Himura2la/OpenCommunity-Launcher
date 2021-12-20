@@ -252,6 +252,12 @@ public class LauncherFrame extends JFrame {
                 });
                 popup.add(menuItem);
 
+                menuItem = new JMenuItem(SharedLocale.tr("instance.openSettings"));
+                menuItem.addActionListener(e -> {
+                    InstanceSettingsDialog.open(this, selected);
+                });
+                popup.add(menuItem);
+
                 popup.addSeparator();
 
                 if (!selected.isUpdatePending()) {

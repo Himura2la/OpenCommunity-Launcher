@@ -6,6 +6,7 @@
 
 package com.skcraft.launcher.launch;
 
+import com.skcraft.launcher.launch.runtime.JavaRuntime;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -48,24 +49,19 @@ public class JavaProcessBuilder {
     @Setter
     private String mainClass;
 
-    /**
-     * Split the given string as simple command line arguments.
-     *
-     * <p>This is not to be used for security purposes.</p>
-     *
-     * @param str the string
-     * @return the split args
-     */
-    public static List<String> splitArgs(String str) {
-        Matcher matcher = argsPattern.matcher(str);
-        List<String> parts = new ArrayList<String>();
-        while (matcher.find()) {
-            parts.add(matcher.group(1));
-        }
-        return parts;
-    }
+    @Getter @Setter private JavaRuntime runtime;
+    @Getter @Setter private int minMemory;
+    @Getter @Setter private int maxMemory;
+    @Getter @Setter private int permGen;
 
-    public void tryJvmPath(File path) throws IOException {
+    @Getter private final List<File> classPath = new ArrayList<File>();
+    @Getter private final List<String> flags = new ArrayList<String>();
+    @Getter private final List<String> args = new ArrayList<String>();
+    @Getter @Setter private String mainClass;
+
+    private File getJavaBinPath() throws IOException {
+        File path = runtime.getDir().getAbsoluteFile();
+
         // Try the parent directory
         if (!path.exists()) {
             throw new IOException(
@@ -79,7 +75,7 @@ public class JavaProcessBuilder {
             path = binDir;
         }
 
-        setJvmPath(path);
+        return path;
     }
 
     public JavaProcessBuilder classPath(File file) {
@@ -109,18 +105,17 @@ public class JavaProcessBuilder {
         return builder.toString();
     }
 
-    public List<String> buildCommand() {
+    public List<String> buildCommand() throws IOException {
         List<String> command = new ArrayList<String>();
 
-        if (getJvmPath() != null) {
-            command.add(getJvmPath() + File.separator + "java");
+        if (getRuntime() != null) {
+            File javaBinary = new File(getJavaBinPath(), "java");
+            command.add(javaBinary.getAbsolutePath());
         } else {
             command.add("java");
         }
 
-        for (String flag : flags) {
-            command.add(flag);
-        }
+        command.addAll(flags);
 
         if (minMemory > 0) {
             command.add("-Xms" + minMemory + "M");
@@ -131,14 +126,14 @@ public class JavaProcessBuilder {
         }
 
         if (permGen > 0) {
-            command.add("-XX:MaxPermSize=" + permGen + "M");
+            // If we know the Java version, only add permsize for 7 or older
+            if (getRuntime() == null || getRuntime().getMajorVersion() < 8) {
+                command.add("-XX:MaxPermSize=" + permGen + "M");
+            }
         }
 
         command.add(mainClass);
-
-        for (String arg : args) {
-            command.add(arg);
-        }
+        command.addAll(args);
 
         return command;
     }
