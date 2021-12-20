@@ -95,7 +95,7 @@ public class LauncherFrame extends JFrame {
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName().equals("pendingUpdate")) {
                     selfUpdateButton.setVisible((Boolean) evt.getNewValue());
-
+                    refreshButton.setVisible(false);
                 }
             }
         });
@@ -140,6 +140,7 @@ public class LauncherFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 launcher.getUpdateManager().performUpdate(LauncherFrame.this);
+                refreshButton.setVisible(true);
             }
         });
 
