@@ -34,14 +34,22 @@ public class ModFileTableModel extends AbstractTableModel {
     @Override
     public String getColumnName(int columnIndex) {
         switch (columnIndex) {
-            case 0: return "";
-            case 1: return "Mod";
-            case 2: return "Version";
-            case 3: return "Latest Release";
-            case 4: return "Latest Dev";
-            case 5: return "Mod ID";
-            case 6: return "Filename";
-            default: return null;
+            case 0:
+                return "";
+            case 1:
+                return "Mod";
+            case 2:
+                return "Version";
+            case 3:
+                return "Latest Release";
+            case 4:
+                return "Latest Dev";
+            case 5:
+                return "Mod ID";
+            case 6:
+                return "Filename";
+            default:
+                return null;
         }
     }
 
@@ -83,14 +91,22 @@ public class ModFileTableModel extends AbstractTableModel {
         }
 
         switch (columnIndex) {
-            case 0: return mod.getUrl() != null ? WWW_ICON : null;
-            case 1: return mod.getName() != null ? mod.getName() : mod.getFile().getName();
-            case 2: return mod.getCleanVersion();
-            case 3: return mod.getLatestVersion();
-            case 4: return mod.getLatestDevVersion();
-            case 5: return mod.getModId();
-            case 6: return mod.getFile().getName();
-            default:  return null;
+            case 0:
+                return mod.getUrl() != null ? WWW_ICON : null;
+            case 1:
+                return mod.getName() != null ? mod.getName() : mod.getFile().getName();
+            case 2:
+                return mod.getCleanVersion();
+            case 3:
+                return mod.getLatestVersion();
+            case 4:
+                return mod.getLatestDevVersion();
+            case 5:
+                return mod.getModId();
+            case 6:
+                return mod.getFile().getName();
+            default:
+                return null;
         }
     }
 

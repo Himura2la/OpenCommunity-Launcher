@@ -7,13 +7,13 @@ import lombok.Data;
  */
 @Data
 public class MemorySettings {
-	/**
-	 * Minimum memory in megabytes.
-	 */
-	private int minMemory;
+    /**
+     * Minimum memory in megabytes.
+     */
+    private int minMemory;
 
-	/**
-	 * Maximum memory in megabytes.
-	 */
-	private int maxMemory;
+    /**
+     * Maximum memory in megabytes.
+     */
+    private int maxMemory;
 }

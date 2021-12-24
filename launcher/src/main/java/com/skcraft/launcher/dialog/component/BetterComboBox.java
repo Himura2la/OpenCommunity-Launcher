@@ -7,22 +7,22 @@ import javax.swing.plaf.basic.ComboPopup;
 import java.awt.*;
 
 public class BetterComboBox<E> extends JComboBox<E> {
-	public BetterComboBox() {
-		setUI(new BetterComboBoxUI());
-	}
+    public BetterComboBox() {
+        setUI(new BetterComboBoxUI());
+    }
 
-	private static class BetterComboBoxUI extends BasicComboBoxUI {
-		@Override
-		protected ComboPopup createPopup() {
-			BasicComboPopup popup = new BasicComboPopup(comboBox) {
-				@Override
-				protected Rectangle computePopupBounds(int px, int py, int pw, int ph) {
-					return super.computePopupBounds(px, py, Math.max(comboBox.getPreferredSize().width, pw), ph);
-				}
-			};
+    private static class BetterComboBoxUI extends BasicComboBoxUI {
+        @Override
+        protected ComboPopup createPopup() {
+            BasicComboPopup popup = new BasicComboPopup(comboBox) {
+                @Override
+                protected Rectangle computePopupBounds(int px, int py, int pw, int ph) {
+                    return super.computePopupBounds(px, py, Math.max(comboBox.getPreferredSize().width, pw), ph);
+                }
+            };
 
-			popup.getAccessibleContext().setAccessibleParent(comboBox);
-			return popup;
-		}
-	}
+            popup.getAccessibleContext().setAccessibleParent(comboBox);
+            return popup;
+        }
+    }
 }

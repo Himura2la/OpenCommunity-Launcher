@@ -202,12 +202,13 @@ public class GenerateListingController {
                         SwingHelper.showMessageDialog(dialog, "Successfully generated package listing.", "Success", null, JOptionPane.INFORMATION_MESSAGE);
                     } else {
                         SwingHelper.showMessageDialog(dialog, "Successfully generated package listing.\n\n" +
-                                "Note that any modpacks with game keys set were not added.",
+                                        "Note that any modpacks with game keys set were not added.",
                                 "Success", null, JOptionPane.INFORMATION_MESSAGE);
                     }
                     dialog.dispose();
                     SwingHelper.browseDir(destDir, dialog);
-                }, ex -> {}, SwingExecutor.INSTANCE);
+                }, ex -> {
+                }, SwingExecutor.INSTANCE);
 
         ProgressDialog.showProgress(dialog, deferred, progress, "Writing package listing...", "Writing package listing...");
         SwingHelper.addErrorDialogCallback(dialog, deferred);

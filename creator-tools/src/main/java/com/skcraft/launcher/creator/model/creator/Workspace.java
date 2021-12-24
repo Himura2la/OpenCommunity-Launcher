@@ -21,7 +21,8 @@ public class Workspace {
     public static final String DIR_NAME = ".modpacks";
     public static final String FILENAME = "workspace.json";
 
-    @JsonIgnore private File directory;
+    @JsonIgnore
+    private File directory;
     private List<Pack> packs = Lists.newArrayList();
     private List<ManifestEntry> packageListingEntries = Lists.newArrayList();
     private ListingType packageListingType = ListingType.STATIC;

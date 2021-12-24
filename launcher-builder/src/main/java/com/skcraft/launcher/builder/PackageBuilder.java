@@ -60,7 +60,8 @@ public class PackageBuilder {
     @Getter
     private boolean prettyPrint = false;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private File baseDir;
 
     private List<Library> loaderLibraries = Lists.newArrayList();
@@ -71,7 +72,7 @@ public class PackageBuilder {
     /**
      * Create a new package builder.
      *
-     * @param mapper the mapper
+     * @param mapper   the mapper
      * @param manifest the manifest
      */
     public PackageBuilder(@NonNull ObjectMapper mapper, @NonNull Manifest manifest) throws IOException {
@@ -168,7 +169,7 @@ public class PackageBuilder {
                     processor = new ModernForgeLoaderProcessor();
                 }
             } else if (BuilderUtils.getZipEntry(jarFile, "fabric-installer.json") != null) {
-            	processor = new FabricLoaderProcessor();
+                processor = new FabricLoaderProcessor();
             }
         } finally {
             closer.close();
@@ -341,10 +342,10 @@ public class PackageBuilder {
 
             Version version = releases.find(manifest.getGameVersion());
             VersionManifest versionManifest = HttpRequest.get(url(version.getUrl()))
-                .execute()
-                .expectResponseCode(200)
-                .returnContent()
-                .asJson(VersionManifest.class);
+                    .execute()
+                    .expectResponseCode(200)
+                    .returnContent()
+                    .asJson(VersionManifest.class);
 
             manifest.setVersionManifest(versionManifest);
         }
@@ -390,7 +391,7 @@ public class PackageBuilder {
      * Build a package given the arguments.
      *
      * @param args arguments
-     * @throws IOException thrown on I/O error
+     * @throws IOException          thrown on I/O error
      * @throws InterruptedException on interruption
      */
     public static void main(String[] args) throws IOException, InterruptedException {

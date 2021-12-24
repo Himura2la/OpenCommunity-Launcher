@@ -10,49 +10,49 @@ import java.io.IOException;
 
 @Log
 public class FileUrlScanner extends DirectoryWalker {
-	public static final String URL_FILE_SUFFIX = ".url.txt";
+    public static final String URL_FILE_SUFFIX = ".url.txt";
 
-	public static boolean isEnabled() {
-		return !System.getProperty("com.skcraft.builder.ignoreURLOverrides", "false")
-				.equalsIgnoreCase("true");
-	}
+    public static boolean isEnabled() {
+        return !System.getProperty("com.skcraft.builder.ignoreURLOverrides", "false")
+                .equalsIgnoreCase("true");
+    }
 
-	@Override
-	protected void onFile(File file, String relPath) throws IOException {
-		if (!file.getName().endsWith(URL_FILE_SUFFIX)) return;
+    @Override
+    protected void onFile(File file, String relPath) throws IOException {
+        if (!file.getName().endsWith(URL_FILE_SUFFIX)) return;
 
-		log.info("Found URL file " + file.getName());
+        log.info("Found URL file " + file.getName());
 
-		File targetFile = new File(file.getAbsoluteFile().getParentFile(),
-				file.getName().replace(URL_FILE_SUFFIX, ""));
-		FileUrlRedirect info = FileUrlRedirect.fromFile(file);
+        File targetFile = new File(file.getAbsoluteFile().getParentFile(),
+                file.getName().replace(URL_FILE_SUFFIX, ""));
+        FileUrlRedirect info = FileUrlRedirect.fromFile(file);
 
-		if (targetFile.exists()) {
-			String localHash = FileUtils.getShaHash(targetFile);
-			if (info.getHash() == null) {
-				// Disabled for now, let's not touch source files
+        if (targetFile.exists()) {
+            String localHash = FileUtils.getShaHash(targetFile);
+            if (info.getHash() == null) {
+                // Disabled for now, let's not touch source files
 //				info.setHash(localHash);
 //				info.writeToFile(file);
-				return;
-			}
+                return;
+            }
 
-			// If everything matches, skip this file
-			if (info.getHash().equals(localHash)) return;
-		}
+            // If everything matches, skip this file
+            if (info.getHash().equals(localHash)) return;
+        }
 
-		File tempFile = File.createTempFile("launcherlib", null);
+        File tempFile = File.createTempFile("launcherlib", null);
 
-		try {
-			log.info("Downloading file " + targetFile.getName() + " from " + info.getUrl() + "...");
-			HttpRequest.get(info.getUrl())
-					.execute()
-					.expectResponseCode(200)
-					.saveContent(tempFile);
-		} catch (InterruptedException e) {
-			throw new IOException(e);
-		}
+        try {
+            log.info("Downloading file " + targetFile.getName() + " from " + info.getUrl() + "...");
+            HttpRequest.get(info.getUrl())
+                    .execute()
+                    .expectResponseCode(200)
+                    .saveContent(tempFile);
+        } catch (InterruptedException e) {
+            throw new IOException(e);
+        }
 
-		Files.move(tempFile, targetFile);
-		log.info("Updated " + targetFile.getName() + " from " + file.getName());
-	}
+        Files.move(tempFile, targetFile);
+        log.info("Updated " + targetFile.getName() + " from " + file.getName());
+    }
 }

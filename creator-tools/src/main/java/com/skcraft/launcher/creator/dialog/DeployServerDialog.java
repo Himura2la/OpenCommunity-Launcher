@@ -75,7 +75,7 @@ public class DeployServerDialog extends JDialog {
             return;
         }
 
-        options = new DeployOptions(dirFile,cleanModsCheck.isSelected());
+        options = new DeployOptions(dirFile, cleanModsCheck.isSelected());
         dispose();
     }
 

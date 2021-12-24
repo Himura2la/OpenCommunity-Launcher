@@ -262,7 +262,7 @@ public class Runner implements Callable<Process>, ProgressObservable {
         builder.setRuntime(selectedRuntime);
 
         List<String> flags = builder.getFlags();
-        String[] rawJvmArgsList = new String[] {
+        String[] rawJvmArgsList = new String[]{
                 config.getJvmArgs(),
                 instance.getSettings().getCustomJvmArgs()
         };

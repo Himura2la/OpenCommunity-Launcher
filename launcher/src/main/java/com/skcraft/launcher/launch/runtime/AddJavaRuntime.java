@@ -8,14 +8,14 @@ import java.io.File;
  * Special sentinel subclass used to represent the "add custom runtime" entry in the dropdown
  */
 public class AddJavaRuntime extends JavaRuntime {
-	public AddJavaRuntime() {
-		super(new File(""), "", false);
-	}
+    public AddJavaRuntime() {
+        super(new File(""), "", false);
+    }
 
-	@Override
-	public String toString() {
-		return SharedLocale.tr("options.addJava");
-	}
+    @Override
+    public String toString() {
+        return SharedLocale.tr("options.addJava");
+    }
 
-	public static final AddJavaRuntime ADD_RUNTIME_SENTINEL = new AddJavaRuntime();
+    public static final AddJavaRuntime ADD_RUNTIME_SENTINEL = new AddJavaRuntime();
 }

@@ -19,12 +19,18 @@ import java.awt.event.KeyEvent;
 
 public class WelcomeDialog extends JFrame {
 
-    @Getter private final JButton newButton = new JButton("New Workspace...", SwingHelper.createIcon(Creator.class, "new.png"));
-    @Getter private final JButton openButton = new JButton("Open Workspace...", SwingHelper.createIcon(Creator.class, "open_folder.png"));
-    @Getter private final JButton helpButton = new JButton("Help");
-    @Getter private final JButton aboutButton = new JButton("About");
-    @Getter private final JButton quitButton = new JButton("Quit");
-    @Getter private final JList<RecentEntry> recentList = new JList<>();
+    @Getter
+    private final JButton newButton = new JButton("New Workspace...", SwingHelper.createIcon(Creator.class, "new.png"));
+    @Getter
+    private final JButton openButton = new JButton("Open Workspace...", SwingHelper.createIcon(Creator.class, "open_folder.png"));
+    @Getter
+    private final JButton helpButton = new JButton("Help");
+    @Getter
+    private final JButton aboutButton = new JButton("About");
+    @Getter
+    private final JButton quitButton = new JButton("Quit");
+    @Getter
+    private final JList<RecentEntry> recentList = new JList<>();
 
     public WelcomeDialog() {
         super("Modpack Creator");

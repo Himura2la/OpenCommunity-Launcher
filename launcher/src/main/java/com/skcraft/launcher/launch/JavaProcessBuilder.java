@@ -28,15 +28,28 @@ public class JavaProcessBuilder {
 
     private static final Pattern argsPattern = Pattern.compile("(?:([^\"]\\S*)|\"(.+?)\")\\s*");
 
-    @Getter @Setter private JavaRuntime runtime;
-    @Getter @Setter private int minMemory;
-    @Getter @Setter private int maxMemory;
-    @Getter @Setter private int permGen;
+    @Getter
+    @Setter
+    private JavaRuntime runtime;
+    @Getter
+    @Setter
+    private int minMemory;
+    @Getter
+    @Setter
+    private int maxMemory;
+    @Getter
+    @Setter
+    private int permGen;
 
-    @Getter private final List<File> classPath = new ArrayList<File>();
-    @Getter private final List<String> flags = new ArrayList<String>();
-    @Getter private final List<String> args = new ArrayList<String>();
-    @Getter @Setter private String mainClass;
+    @Getter
+    private final List<File> classPath = new ArrayList<File>();
+    @Getter
+    private final List<String> flags = new ArrayList<String>();
+    @Getter
+    private final List<String> args = new ArrayList<String>();
+    @Getter
+    @Setter
+    private String mainClass;
 
     private File getJavaBinPath() throws IOException {
         File path = runtime.getDir().getAbsoluteFile();

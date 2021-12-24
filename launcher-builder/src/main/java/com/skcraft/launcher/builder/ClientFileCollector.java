@@ -11,9 +11,9 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 import com.skcraft.launcher.model.modpack.FileInstall;
 import com.skcraft.launcher.model.modpack.Manifest;
-import lombok.NonNull;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.extern.java.Log;
 import org.apache.commons.io.FilenameUtils;
 
@@ -21,8 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.logging.Level;
 
 /**
@@ -42,9 +40,9 @@ public class ClientFileCollector extends DirectoryWalker {
     /**
      * Create a new collector.
      *
-     * @param manifest the manifest
+     * @param manifest   the manifest
      * @param applicator applies properties to manifest entries
-     * @param destDir the destination directory to copy the hashed objects
+     * @param destDir    the destination directory to copy the hashed objects
      */
     public ClientFileCollector(@NonNull Manifest manifest, @NonNull PropertiesApplicator applicator,
                                @NonNull File destDir) {

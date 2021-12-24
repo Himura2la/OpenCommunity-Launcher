@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InstanceSettings {
-	private JavaRuntime runtime;
-	private MemorySettings memorySettings;
-	private String customJvmArgs;
+    private JavaRuntime runtime;
+    private MemorySettings memorySettings;
+    private String customJvmArgs;
 }

@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JavaVersion {
-	private String component;
-	private int majorVersion;
+    private String component;
+    private int majorVersion;
 }

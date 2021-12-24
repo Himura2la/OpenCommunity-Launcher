@@ -20,9 +20,12 @@ import java.awt.event.KeyEvent;
 
 public class VersionCheckDialog extends JDialog {
 
-    @Getter private final JTable knownModsTable = new DefaultTable();
-    @Getter private final JTable unknownModsTable = new DefaultTable();
-    @Getter private final JButton closeButton = new JButton("Close");
+    @Getter
+    private final JTable knownModsTable = new DefaultTable();
+    @Getter
+    private final JTable unknownModsTable = new DefaultTable();
+    @Getter
+    private final JButton closeButton = new JButton("Close");
     private final TableColumnAdjuster updateTableAdjuster = new TableColumnAdjuster(knownModsTable);
     private final TableColumnAdjuster unknownTableAdjuster = new TableColumnAdjuster(unknownModsTable);
 

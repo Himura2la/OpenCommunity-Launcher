@@ -20,7 +20,8 @@ public class PropertiesApplicator {
     private final Manifest manifest;
     private final Set<Feature> used = new HashSet<Feature>();
     private final List<FeaturePattern> features = new ArrayList<FeaturePattern>();
-    @Getter @Setter
+    @Getter
+    @Setter
     private FnPatternList userFiles;
 
     public PropertiesApplicator(Manifest manifest) {

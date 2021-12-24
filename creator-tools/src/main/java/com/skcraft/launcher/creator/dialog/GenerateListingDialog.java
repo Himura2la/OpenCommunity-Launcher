@@ -24,17 +24,25 @@ import java.awt.event.KeyEvent;
 
 public class GenerateListingDialog extends JDialog {
 
-    @Getter private final DirectoryField destDirField = new DirectoryField();
-    @Getter private final JComboBox<ListingType> listingTypeCombo = new JComboBox<>(new ListingTypeComboBoxModel());
-    @Getter private final JTable manifestsTable = new DefaultTable();
-    @Getter private final JLabel gameKeyWarning = new JLabel("Selected listing type won't support adding modpacks using 'game keys'.", SwingHelper.createIcon(Creator.class, "warning_icon.png"), SwingConstants.LEFT);
+    @Getter
+    private final DirectoryField destDirField = new DirectoryField();
+    @Getter
+    private final JComboBox<ListingType> listingTypeCombo = new JComboBox<>(new ListingTypeComboBoxModel());
+    @Getter
+    private final JTable manifestsTable = new DefaultTable();
+    @Getter
+    private final JLabel gameKeyWarning = new JLabel("Selected listing type won't support adding modpacks using 'game keys'.", SwingHelper.createIcon(Creator.class, "warning_icon.png"), SwingConstants.LEFT);
 
-    @Getter private final JButton editManifestButton = new JButton("Modify...");
+    @Getter
+    private final JButton editManifestButton = new JButton("Modify...");
 
-    @Getter private final JButton generateButton = new JButton("Generate");
-    @Getter private final JButton cancelButton = new JButton("Cancel");
+    @Getter
+    private final JButton generateButton = new JButton("Generate");
+    @Getter
+    private final JButton cancelButton = new JButton("Cancel");
 
-    @Getter private final TableColumnAdjuster manifestsTableAdjuster = new TableColumnAdjuster(manifestsTable);
+    @Getter
+    private final TableColumnAdjuster manifestsTableAdjuster = new TableColumnAdjuster(manifestsTable);
 
     public GenerateListingDialog(Window parent) {
         super(parent, "Generate Package Listing", ModalityType.DOCUMENT_MODAL);

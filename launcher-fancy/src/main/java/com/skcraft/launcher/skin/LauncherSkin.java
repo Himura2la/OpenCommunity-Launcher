@@ -6,13 +6,6 @@
 
 package com.skcraft.launcher.skin;
 
-import org.pushingpixels.substance.api.*;
-import org.pushingpixels.substance.api.painter.border.ClassicBorderPainter;
-import org.pushingpixels.substance.api.painter.border.CompositeBorderPainter;
-import org.pushingpixels.substance.api.painter.border.DelegateBorderPainter;
-import org.pushingpixels.substance.api.painter.decoration.FlatDecorationPainter;
-import org.pushingpixels.substance.api.painter.fill.FractionBasedFillPainter;
-import org.pushingpixels.substance.api.painter.highlight.ClassicHighlightPainter;
 import org.pushingpixels.substance.api.skin.GraphiteSkin;
 
 public class LauncherSkin extends GraphiteSkin {

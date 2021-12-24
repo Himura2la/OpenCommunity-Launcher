@@ -47,7 +47,7 @@ public class FileInfoScanner extends DirectoryWalker {
         if (file.getName().endsWith(FILE_SUFFIX)) {
             String fnPattern =
                     separatorsToUnix(getPath(relPath)) +
-                    getBaseName(getBaseName(file.getName())) + "*";
+                            getBaseName(getBaseName(file.getName())) + "*";
 
             FileInfo info = mapper.readValue(file, FileInfo.class);
             Feature feature = info.getFeature();

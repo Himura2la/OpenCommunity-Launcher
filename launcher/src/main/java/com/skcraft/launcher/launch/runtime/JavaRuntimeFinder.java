@@ -25,6 +25,7 @@ public final class JavaRuntimeFinder {
 
     /**
      * Get all available Java runtimes on the system
+     *
      * @return List of available Java runtimes sorted by newest first
      */
     public static List<JavaRuntime> getAvailableRuntimes() {
@@ -53,6 +54,7 @@ public final class JavaRuntimeFinder {
 
     /**
      * Find the best runtime for a given Java version
+     *
      * @param targetVersion Version to match
      * @return Java runtime if available, empty Optional otherwise
      */

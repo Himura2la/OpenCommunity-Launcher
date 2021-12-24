@@ -17,17 +17,28 @@ public class FnMatch {
 
     public static enum Flag {
 
-        /** Disable backslash escaping. */
+        /**
+         * Disable backslash escaping.
+         */
         NOESCAPE,
-        /** Slash must be matched by slash. */
+        /**
+         * Slash must be matched by slash.
+         */
         PATHNAME,
-        /** Period must be matched by period. */
+        /**
+         * Period must be matched by period.
+         */
         PERIOD,
-        /** Ignore /<tail> after Imatch. */
+        /**
+         * Ignore /<tail> after Imatch.
+         */
         LEADING_DIR,
-        /** Case insensitive search. */
+        /**
+         * Case insensitive search.
+         */
         CASEFOLD
     }
+
     private static final int RANGE_ERROR = -1;
     private static final int RANGE_NOMATCH = 0;
 
@@ -48,7 +59,7 @@ public class FnMatch {
     }
 
     private static boolean match(String pattern, int patternPos,
-            String string, int stringPos, EnumSet<Flag> flags) {
+                                 String string, int stringPos, EnumSet<Flag> flags) {
         char c;
 
         while (true) {
@@ -154,7 +165,7 @@ public class FnMatch {
             }
             if (c != string.charAt(stringPos) &&
                     !(flags.contains(Flag.CASEFOLD) &&
-                    Character.toLowerCase(c) == Character.toLowerCase(string.charAt(stringPos)))) {
+                            Character.toLowerCase(c) == Character.toLowerCase(string.charAt(stringPos)))) {
                 return false;
             }
             ++stringPos;
@@ -166,8 +177,8 @@ public class FnMatch {
         if (stringPos > string.length() - 1)
             return false;
         return (stringPos == 0
-            || (flags.contains(Flag.PATHNAME) && string.charAt(stringPos - 1) == '/'))
-            && string.charAt(stringPos) == '.' && flags.contains(Flag.PERIOD);
+                || (flags.contains(Flag.PATHNAME) && string.charAt(stringPos - 1) == '/'))
+                && string.charAt(stringPos) == '.' && flags.contains(Flag.PERIOD);
     }
 
     private static int matchRange(String pattern, int patternPos, char test, EnumSet<Flag> flags) {

@@ -76,9 +76,12 @@ public enum ListingType {
         }
     };
 
-    @Getter private final String name;
-    @Getter private final boolean gameKeyCompatible;
-    @Getter private final String filename;
+    @Getter
+    private final String name;
+    @Getter
+    private final boolean gameKeyCompatible;
+    @Getter
+    private final String filename;
 
     ListingType(String name, boolean gameKeyCompatible, String filename) {
         this.name = name;

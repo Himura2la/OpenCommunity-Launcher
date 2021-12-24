@@ -21,6 +21,7 @@ public class Feature implements Comparable<Feature> {
     private String description;
     private Recommendation recommendation;
     private boolean selected;
+
     public Feature() {
     }
 

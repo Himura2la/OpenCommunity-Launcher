@@ -60,11 +60,12 @@ public class WelcomeController {
         ListeningExecutorService executor = creator.getExecutor();
         PackManagerFrame frame = new PackManagerFrame();
         Deferred<?> deferred = Deferreds.makeDeferred(executor.submit(() -> {
-            PackManagerController controller = new PackManagerController(frame, dir, creator);
-            addRecentEntry(dir);
-            return controller;
-        }), executor)
-                .handleAsync(PackManagerController::show, ex -> {}, SwingExecutor.INSTANCE);
+                    PackManagerController controller = new PackManagerController(frame, dir, creator);
+                    addRecentEntry(dir);
+                    return controller;
+                }), executor)
+                .handleAsync(PackManagerController::show, ex -> {
+                }, SwingExecutor.INSTANCE);
         ProgressDialog.showProgress(frame, deferred, new SettableProgress("Loading...", -1), "Loading workspace...", "Loading workspace...");
         SwingHelper.addErrorDialogCallback(frame, deferred);
 

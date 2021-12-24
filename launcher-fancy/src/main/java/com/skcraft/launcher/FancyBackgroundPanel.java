@@ -32,30 +32,28 @@ public class FancyBackgroundPanel extends JPanel {
 
             // Calculate Aspect Ratio Multiplier depending on window size
             if (this.getHeight() <= this.getWidth()) {
-                multi = this.getWidth() / (float)background.getWidth(null);
-            }
-            else {
-                multi = this.getHeight() / (float)background.getHeight(null);
+                multi = this.getWidth() / (float) background.getWidth(null);
+            } else {
+                multi = this.getHeight() / (float) background.getHeight(null);
             }
 
             // Calculate new width and height
-            w = (int) Math.floor((float)background.getWidth(null) * multi);
-            h = (int) Math.floor((float)background.getHeight(null) * multi);
+            w = (int) Math.floor((float) background.getWidth(null) * multi);
+            h = (int) Math.floor((float) background.getHeight(null) * multi);
 
             // Check if it needs to be switched (eg. in case of a square window)
             if (h < this.getHeight() || w < this.getWidth()) {
                 if (h < this.getHeight()) {
-                    multi = this.getHeight() / (float)background.getHeight(null);
-                }
-                else if (w < this.getWidth()) {
+                    multi = this.getHeight() / (float) background.getHeight(null);
+                } else if (w < this.getWidth()) {
                     multi = this.getWidth() / (float) background.getWidth(null);
                 }
 
-                w = (int) Math.floor((float)background.getWidth(null) * multi);
-                h = (int) Math.floor((float)background.getHeight(null) * multi);
+                w = (int) Math.floor((float) background.getWidth(null) * multi);
+                h = (int) Math.floor((float) background.getHeight(null) * multi);
             }
 
-            g.drawImage(background, 0, 0, w, h,null);
+            g.drawImage(background, 0, 0, w, h, null);
         }
     }
 }

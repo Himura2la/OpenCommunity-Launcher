@@ -64,17 +64,28 @@ public class PackManagerController {
     private static final DateFormat VERSION_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
     private static final Pattern FILENAME_SANITIZE = Pattern.compile("[^a-z0-9_\\-\\.]+");
 
-    @Getter private final File workspaceDir;
-    @Getter private final Creator creator;
-    @Getter private final File workspaceFile;
-    @Getter private final File dataDir;
-    @Getter private final File distDir;
-    @Getter private final File launcherDir;
-    @Getter private File webRoot;
-    @Getter private Workspace workspace;
-    @Getter private final Launcher launcher;
-    @Getter private final ListeningExecutorService executor;
-    @Getter private final TestServer testServer;
+    @Getter
+    private final File workspaceDir;
+    @Getter
+    private final Creator creator;
+    @Getter
+    private final File workspaceFile;
+    @Getter
+    private final File dataDir;
+    @Getter
+    private final File distDir;
+    @Getter
+    private final File launcherDir;
+    @Getter
+    private File webRoot;
+    @Getter
+    private Workspace workspace;
+    @Getter
+    private final Launcher launcher;
+    @Getter
+    private final ListeningExecutorService executor;
+    @Getter
+    private final TestServer testServer;
 
     private File lastServerDestDir;
 
@@ -114,9 +125,9 @@ public class PackManagerController {
         loadWorkspace();
 
         Deferreds.makeDeferred(executor.submit(() -> {
-            startServer();
-            return null;
-        }))
+                    startServer();
+                    return null;
+                }))
                 .handle(
                         result -> {
                         },
@@ -138,15 +149,15 @@ public class PackManagerController {
         SettableProgress progress = new SettableProgress("Loading workspace...", -1);
 
         Deferred<?> deferred = Deferreds.makeDeferred(executor.submit(() -> {
-            Workspace workspace = Persistence.load(workspaceFile, Workspace.class);
-            workspace.setDirectory(workspaceDir);
-            workspace.load();
-            if (!workspaceFile.exists()) {
-                Persistence.commitAndForget(workspace);
-            }
-            this.workspace = workspace;
-            return workspace;
-        }))
+                    Workspace workspace = Persistence.load(workspaceFile, Workspace.class);
+                    workspace.setDirectory(workspaceDir);
+                    workspace.load();
+                    if (!workspaceFile.exists()) {
+                        Persistence.commitAndForget(workspace);
+                    }
+                    this.workspace = workspace;
+                    return workspace;
+                }))
                 .thenTap(() -> progress.observe(loader))
                 .thenApply(loader)
                 .thenApplyAsync(packs -> {
@@ -519,7 +530,7 @@ public class PackManagerController {
 
                         if (found == null) {
                             SwingHelper.showErrorDialog(frame, "No instance found for that pack - you need " +
-                                            "to test the pack first.", "Not Found");
+                                    "to test the pack first.", "Not Found");
                             return;
                         }
 
@@ -609,7 +620,7 @@ public class PackManagerController {
 
                 VersionCheckDialog dialog = new VersionCheckDialog(frame);
                 VersionCheckController controller = new VersionCheckController(dialog, executor);
-                    controller.showUpdates(pack.getModsDir(), pack.getCachedConfig().getGameVersion(), frame);
+                controller.showUpdates(pack.getModsDir(), pack.getCachedConfig().getGameVersion(), frame);
             }
         });
 
@@ -804,7 +815,8 @@ public class PackManagerController {
                 .thenRun(enumerator)
                 .thenTap(() -> progress.set("Launching", -1))
                 .thenApply(instanceLauncher)
-                .handleAsync(result -> ConsoleFrame.hideMessages(), ex -> {}, SwingExecutor.INSTANCE);
+                .handleAsync(result -> ConsoleFrame.hideMessages(), ex -> {
+                }, SwingExecutor.INSTANCE);
 
         ProgressDialog.showProgress(frame, deferred, progress, "Setting up test instance...", "Preparing files for launch...");
         SwingHelper.addErrorDialogCallback(frame, deferred);
@@ -821,7 +833,8 @@ public class PackManagerController {
                     .handleAsync(result -> {
                         ConsoleFrame.hideMessages();
                         SwingHelper.showMessageDialog(frame, "Successfully generated the package files.", "Success", null, JOptionPane.INFORMATION_MESSAGE);
-                    }, ex -> {}, SwingExecutor.INSTANCE);
+                    }, ex -> {
+                    }, SwingExecutor.INSTANCE);
             ProgressDialog.showProgress(frame, deferred, builder, "Building modpack...", "Building modpack...");
             SwingHelper.addErrorDialogCallback(frame, deferred);
         }

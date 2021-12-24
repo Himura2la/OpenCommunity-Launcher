@@ -52,7 +52,7 @@ public abstract class DirectoryWalker {
     /**
      * Recursively walk the given directory and keep track of the relative path.
      *
-     * @param dir the directory
+     * @param dir      the directory
      * @param basePath the base path
      * @throws IOException
      */
@@ -73,7 +73,8 @@ public abstract class DirectoryWalker {
                         case IGNORE:
                             walk(file, newPath);
                             break;
-                        case SKIP: break;
+                        case SKIP:
+                            break;
                     }
                 } else {
                     onFile(file, basePath + file.getName());
@@ -95,7 +96,7 @@ public abstract class DirectoryWalker {
     /**
      * Callback on each file.
      *
-     * @param file the file
+     * @param file    the file
      * @param relPath the relative path
      * @throws IOException thrown on I/O error
      */
@@ -105,5 +106,8 @@ public abstract class DirectoryWalker {
     /**
      * Called after the walk is completed.
      */
-    protected void onWalkComplete() {};
+    protected void onWalkComplete() {
+    }
+
+    ;
 }
