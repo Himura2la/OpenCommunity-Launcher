@@ -1,4 +1,19 @@
-apply plugin: 'com.github.johnrengelman.shadow'
+plugins {
+    id 'application'
+    id "com.github.johnrengelman.shadow"
+    id 'io.freefair.lombok'
+}
+
+application {
+    mainClassName = "com.skcraft.launcher.RedditLauncher"
+}
+
+repositories {
+    maven {
+        name = 'obw maven'
+        url = 'https://maven.offbeatwit.ch/repository/snapshots'
+    }
+}
 
 jar {
     manifest {
@@ -7,22 +22,18 @@ jar {
 }
 
 dependencies {
-    compile project(':launcher')
-    compile 'com.github.insubstantial:substance:7.3'
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
-
-    testCompileOnly 'org.projectlombok:lombok:1.18.20'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+    implementation project(path: ':launcher', configuration: 'shadow')
+    implementation 'io.github.cottonmc.insubstantial:substance:7.3.1-SNAPSHOT'
 }
 
-shadowJar {
-    dependencies {
-        exclude(dependency('org.projectlombok:lombok'))
-    }
-}
 repositories {
     mavenCentral()
 }
 
-build.dependsOn(shadowJar)
+shadowJar {
+    archiveClassifier.set("")
+}
+
+build {
+    dependsOn(shadowJar)
+}

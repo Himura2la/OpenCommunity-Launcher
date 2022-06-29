@@ -9,22 +9,22 @@ import java.util.logging.Level;
 
 @Log
 public class MinecraftSkinService {
-    static byte[] downloadSkin(String textureUrl) throws IOException, InterruptedException {
-        return HttpRequest.get(HttpRequest.url(textureUrl))
-                .execute()
-                .expectResponseCode(200)
-                .returnContent()
-                .asBytes();
-    }
+	static byte[] downloadSkin(String textureUrl) throws IOException, InterruptedException {
+		return HttpRequest.get(HttpRequest.url(textureUrl))
+				.execute()
+				.expectResponseCode(200)
+				.returnContent()
+				.asBytes();
+	}
 
-    public static byte[] fetchSkinHead(McProfileResponse profile) throws InterruptedException {
-        try {
-            byte[] skin = downloadSkin(profile.getActiveSkin().getUrl());
+	public static byte[] fetchSkinHead(McProfileResponse profile) throws InterruptedException {
+		try {
+			byte[] skin = downloadSkin(profile.getActiveSkin().getUrl());
 
-            return SkinProcessor.renderHead(skin);
-        } catch (IOException e) {
-            log.log(Level.WARNING, "Failed to download or process skin.", e);
-            return null;
-        }
-    }
+			return SkinProcessor.renderHead(skin);
+		} catch (IOException e) {
+			log.log(Level.WARNING, "Failed to download or process skin.", e);
+			return null;
+		}
+	}
 }

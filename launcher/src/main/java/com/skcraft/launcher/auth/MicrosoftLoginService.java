@@ -1,7 +1,7 @@
 package com.skcraft.launcher.auth;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.skcraft.launcher.auth.microsoft.MicrosoftWebAuthorizer;
 import com.skcraft.launcher.auth.microsoft.MinecraftServicesAuthorizer;
@@ -35,8 +35,8 @@ public class MicrosoftLoginService implements LoginService {
      *
      * @param oauthDone Callback called when OAuth is complete and automatic login is about to begin.
      * @return Valid {@link Session} instance representing the logged-in player.
-     * @throws IOException             if any I/O error occurs.
-     * @throws InterruptedException    if the current thread is interrupted
+     * @throws IOException if any I/O error occurs.
+     * @throws InterruptedException if the current thread is interrupted
      * @throws AuthenticationException if authentication fails in any way, this is thrown with a human-useful message.
      */
     public Session login(Receiver oauthDone) throws IOException, InterruptedException, AuthenticationException {
@@ -109,11 +109,6 @@ public class MicrosoftLoginService implements LoginService {
         return session;
     }
 
-    @FunctionalInterface
-    public interface Receiver {
-        void tell();
-    }
-
     @Data
     public static class Profile implements Session {
         private final McAuthResponse auth;
@@ -168,10 +163,15 @@ public class MicrosoftLoginService implements LoginService {
     }
 
     @Data
-    @JsonNaming(PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy.class)
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonIgnoreProperties(ignoreUnknown = true)
     private static class TokenError {
         private String error;
         private String errorDescription;
+    }
+
+    @FunctionalInterface
+    public interface Receiver {
+        void tell();
     }
 }

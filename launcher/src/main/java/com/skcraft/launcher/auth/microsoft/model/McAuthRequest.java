@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class McAuthRequest {
-    private final String identityToken;
+	private final String identityToken;
 }

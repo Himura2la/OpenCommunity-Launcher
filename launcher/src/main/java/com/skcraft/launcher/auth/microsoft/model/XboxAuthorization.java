@@ -4,10 +4,10 @@ import lombok.Data;
 
 @Data
 public class XboxAuthorization {
-    private final String token;
-    private final String uhs;
+	private final String token;
+	private final String uhs;
 
-    public String getCombinedToken() {
-        return String.format("%s;%s", uhs, token);
-    }
+	public String getCombinedToken() {
+		return String.format("%s;%s", uhs, token);
+	}
 }

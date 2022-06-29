@@ -407,6 +407,7 @@ public class LauncherFrame extends JFrame {
         @Override
         public void gameClosed() {
             launcher.showLauncherWindow();
+            launcher.getUpdateManager().checkForUpdate();
         }
     }
 

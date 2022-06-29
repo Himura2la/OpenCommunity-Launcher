@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class McServicesError {
-    private String error;
-    private String errorMessage;
+	private String error;
+	private String errorMessage;
 }

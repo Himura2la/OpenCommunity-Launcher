@@ -56,28 +56,17 @@ public final class Launcher {
 
     @Getter
     private final ListeningExecutorService executor = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
-    @Getter
-    private final File baseDir;
-    @Getter
-    private final Properties properties;
-    @Getter
-    private final InstanceList instances;
-    @Getter
-    private final Configuration config;
-    @Getter
-    private final AccountList accounts;
-    @Getter
-    private final AssetsRoot assets;
-    @Getter
-    private final LaunchSupervisor launchSupervisor = new LaunchSupervisor(this);
-    @Getter
-    private final UpdateManager updateManager = new UpdateManager(this);
-    @Getter
-    private final InstanceTasks instanceTasks = new InstanceTasks(this);
+    @Getter @Setter private Supplier<Window> mainWindowSupplier = new DefaultLauncherSupplier(this);
+    @Getter private final File baseDir;
+    @Getter private final Properties properties;
+    @Getter private final InstanceList instances;
+    @Getter private final Configuration config;
+    @Getter private final AccountList accounts;
+    @Getter private final AssetsRoot assets;
+    @Getter private final LaunchSupervisor launchSupervisor = new LaunchSupervisor(this);
+    @Getter private final UpdateManager updateManager = new UpdateManager(this);
+    @Getter private final InstanceTasks instanceTasks = new InstanceTasks(this);
     private final Environment env = Environment.getInstance();
-    @Getter
-    @Setter
-    private Supplier<Window> mainWindowSupplier = new DefaultLauncherSupplier(this);
 
     /**
      * Create a new launcher instance with the given base directory.
@@ -93,7 +82,7 @@ public final class Launcher {
      * Create a new launcher instance with the given base and configuration
      * directories.
      *
-     * @param baseDir   the base directory
+     * @param baseDir the base directory
      * @param configDir the config directory
      * @throws java.io.IOException on load error
      */
@@ -117,66 +106,6 @@ public final class Launcher {
         });
 
         updateManager.checkForUpdate();
-    }
-
-    /**
-     * Create a new launcher from arguments.
-     *
-     * @param args the arguments
-     * @return the launcher
-     * @throws ParameterException thrown on a bad parameter
-     * @throws IOException        throw on an I/O error
-     */
-    public static Launcher createFromArguments(String[] args) throws ParameterException, IOException {
-        LauncherArguments options = new LauncherArguments();
-        new JCommander(options, args);
-
-        Integer bsVersion = options.getBootstrapVersion();
-        log.info(bsVersion != null ? "Bootstrap version " + bsVersion + " detected" : "Not bootstrapped");
-
-        File dir = options.getDir();
-        if (dir != null) {
-            dir = dir.getAbsoluteFile();
-            log.info("Using given base directory " + dir.getAbsolutePath());
-        } else {
-            dir = new File("").getAbsoluteFile();
-            log.info("Using current directory " + dir.getAbsolutePath());
-        }
-
-        return new Launcher(dir);
-    }
-
-    /**
-     * Setup loggers and perform initialization.
-     */
-    public static void setupLogger() {
-        SimpleLogFormatter.configureGlobalLogger();
-    }
-
-    /**
-     * Bootstrap.
-     *
-     * @param args args
-     */
-    public static void main(final String[] args) {
-        setupLogger();
-
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Launcher launcher = createFromArguments(args);
-                    SwingHelper.setSwingProperties(tr("launcher.appTitle", launcher.getVersion()));
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                    launcher.showLauncherWindow();
-                } catch (Throwable t) {
-                    log.log(Level.WARNING, "Load failure", t);
-                    SwingHelper.showErrorDialog(null, "Uh oh! The updater couldn't be opened because a " +
-                            "problem was encountered.", "Launcher error", t);
-                }
-            }
-        });
-
     }
 
     /**
@@ -360,7 +289,6 @@ public final class Launcher {
 
     /**
      * Fetch a library file.
-     *
      * @param library Library to fetch
      * @return File pointing to the library on disk.
      */
@@ -441,7 +369,7 @@ public final class Launcher {
     /**
      * Convenient method to fetch a property.
      *
-     * @param key  the key
+     * @param key the key
      * @param args formatting arguments
      * @return the property
      */
@@ -462,7 +390,7 @@ public final class Launcher {
     /**
      * Convenient method to fetch a property.
      *
-     * @param key  the key
+     * @param key the key
      * @param args formatting arguments
      * @return the property
      */
@@ -475,6 +403,66 @@ public final class Launcher {
      */
     public void showLauncherWindow() {
         mainWindowSupplier.get().setVisible(true);
+    }
+
+    /**
+     * Create a new launcher from arguments.
+     *
+     * @param args the arguments
+     * @return the launcher
+     * @throws ParameterException thrown on a bad parameter
+     * @throws IOException throw on an I/O error
+     */
+    public static Launcher createFromArguments(String[] args) throws ParameterException, IOException {
+        LauncherArguments options = new LauncherArguments();
+        new JCommander(options).parse(args);
+
+        Integer bsVersion = options.getBootstrapVersion();
+        log.info(bsVersion != null ? "Bootstrap version " + bsVersion + " detected" : "Not bootstrapped");
+
+        File dir = options.getDir();
+        if (dir != null) {
+            dir = dir.getAbsoluteFile();
+            log.info("Using given base directory " + dir.getAbsolutePath());
+        } else {
+            dir = new File("").getAbsoluteFile();
+            log.info("Using current directory " + dir.getAbsolutePath());
+        }
+
+        return new Launcher(dir);
+    }
+
+    /**
+     * Setup loggers and perform initialization.
+     */
+    public static void setupLogger() {
+        SimpleLogFormatter.configureGlobalLogger();
+    }
+
+    /**
+     * Bootstrap.
+     *
+     * @param args args
+     */
+    public static void main(final String[] args) {
+        setupLogger();
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Launcher launcher = createFromArguments(args);
+                    SwingHelper.setSwingProperties(tr("launcher.appTitle", launcher.getVersion()));
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                    launcher.showLauncherWindow();
+                } catch (Throwable t) {
+                    log.log(Level.WARNING, "Load failure", t);
+                    SwingHelper.showErrorDialog(null, "Uh oh! The updater couldn't be opened because a " +
+                            "problem was encountered.", "Launcher error", t);
+                }
+            }
+        });
+
     }
 
 }
