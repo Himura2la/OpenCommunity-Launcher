@@ -10,10 +10,10 @@ import java.util.List;
 @Data
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class XstsAuthProperties {
-	private String sandboxId = "RETAIL";
-	private List<String> userTokens;
+    private String sandboxId = "RETAIL";
+    private List<String> userTokens;
 
-	public XstsAuthProperties(String token) {
-		this.userTokens = Collections.singletonList(token);
-	}
+    public XstsAuthProperties(String token) {
+        this.userTokens = Collections.singletonList(token);
+    }
 }

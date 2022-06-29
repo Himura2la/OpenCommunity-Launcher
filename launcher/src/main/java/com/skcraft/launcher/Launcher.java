@@ -56,16 +56,27 @@ public final class Launcher {
 
     @Getter
     private final ListeningExecutorService executor = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
-    @Getter @Setter private Supplier<Window> mainWindowSupplier = new DefaultLauncherSupplier(this);
-    @Getter private final File baseDir;
-    @Getter private final Properties properties;
-    @Getter private final InstanceList instances;
-    @Getter private final Configuration config;
-    @Getter private final AccountList accounts;
-    @Getter private final AssetsRoot assets;
-    @Getter private final LaunchSupervisor launchSupervisor = new LaunchSupervisor(this);
-    @Getter private final UpdateManager updateManager = new UpdateManager(this);
-    @Getter private final InstanceTasks instanceTasks = new InstanceTasks(this);
+    @Getter
+    @Setter
+    private Supplier<Window> mainWindowSupplier = new DefaultLauncherSupplier(this);
+    @Getter
+    private final File baseDir;
+    @Getter
+    private final Properties properties;
+    @Getter
+    private final InstanceList instances;
+    @Getter
+    private final Configuration config;
+    @Getter
+    private final AccountList accounts;
+    @Getter
+    private final AssetsRoot assets;
+    @Getter
+    private final LaunchSupervisor launchSupervisor = new LaunchSupervisor(this);
+    @Getter
+    private final UpdateManager updateManager = new UpdateManager(this);
+    @Getter
+    private final InstanceTasks instanceTasks = new InstanceTasks(this);
     private final Environment env = Environment.getInstance();
 
     /**
@@ -82,7 +93,7 @@ public final class Launcher {
      * Create a new launcher instance with the given base and configuration
      * directories.
      *
-     * @param baseDir the base directory
+     * @param baseDir   the base directory
      * @param configDir the config directory
      * @throws java.io.IOException on load error
      */
@@ -289,6 +300,7 @@ public final class Launcher {
 
     /**
      * Fetch a library file.
+     *
      * @param library Library to fetch
      * @return File pointing to the library on disk.
      */
@@ -369,7 +381,7 @@ public final class Launcher {
     /**
      * Convenient method to fetch a property.
      *
-     * @param key the key
+     * @param key  the key
      * @param args formatting arguments
      * @return the property
      */
@@ -390,7 +402,7 @@ public final class Launcher {
     /**
      * Convenient method to fetch a property.
      *
-     * @param key the key
+     * @param key  the key
      * @param args formatting arguments
      * @return the property
      */
@@ -411,7 +423,7 @@ public final class Launcher {
      * @param args the arguments
      * @return the launcher
      * @throws ParameterException thrown on a bad parameter
-     * @throws IOException throw on an I/O error
+     * @throws IOException        throw on an I/O error
      */
     public static Launcher createFromArguments(String[] args) throws ParameterException, IOException {
         LauncherArguments options = new LauncherArguments();

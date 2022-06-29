@@ -106,10 +106,10 @@ public class JavaRuntime implements Comparable<JavaRuntime> {
         return a.length > b.length ? -1 : 1;
     }
 
-	@Override
-	public String toString() {
-		String version = this.version != null ? this.version : "unknown";
+    @Override
+    public String toString() {
+        String version = this.version != null ? this.version : "unknown";
 
-		return String.format("Java %s (%s) (%s)", version, is64Bit ? "64-bit" : "32-bit", dir);
-	}
+        return String.format("Java %s (%s) (%s)", version, is64Bit ? "64-bit" : "32-bit", dir);
+    }
 }

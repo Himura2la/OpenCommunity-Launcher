@@ -10,12 +10,12 @@ import lombok.Data;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class McAuthResponse {
-	private String accessToken;
-	private String tokenType;
-	private int expiresIn;
+    private String accessToken;
+    private String tokenType;
+    private int expiresIn;
 
-	@JsonIgnore
-	public String getAuthorization() {
-		return String.format("%s %s", tokenType, accessToken);
-	}
+    @JsonIgnore
+    public String getAuthorization() {
+        return String.format("%s %s", tokenType, accessToken);
+    }
 }

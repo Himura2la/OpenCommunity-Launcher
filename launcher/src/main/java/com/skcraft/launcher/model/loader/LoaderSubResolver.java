@@ -105,7 +105,7 @@ public class LoaderSubResolver implements Function<String, String> {
                         i = j;
                         break;
                     } else if (c == '\'' && d == '\'') {
-                        buf.append(keyBuf.toString());
+                        buf.append(keyBuf);
                         i = j;
                         break;
                     } else {

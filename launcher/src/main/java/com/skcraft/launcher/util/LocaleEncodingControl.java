@@ -13,80 +13,80 @@ import java.util.ResourceBundle;
 
 @Log
 public class LocaleEncodingControl extends ResourceBundle.Control {
-	@Override
-	public ResourceBundle newBundle(String baseName, Locale locale, String format, ClassLoader loader, boolean reload) throws IllegalAccessException, InstantiationException, IOException {
-		if (!format.equals("java.properties")) {
-			return super.newBundle(baseName, locale, format, loader, reload);
-		}
+    @Override
+    public ResourceBundle newBundle(String baseName, Locale locale, String format, ClassLoader loader, boolean reload) throws IllegalAccessException, InstantiationException, IOException {
+        if (!format.equals("java.properties")) {
+            return super.newBundle(baseName, locale, format, loader, reload);
+        }
 
-		String bundleName = this.toBundleName(baseName, locale);
-		String resourceName = this.toResourceName(bundleName, "properties");
+        String bundleName = this.toBundleName(baseName, locale);
+        String resourceName = this.toResourceName(bundleName, "properties");
 
-		InputStream is = this.getResourceAsStream(resourceName, loader, reload);
-		if (is == null) {
-			return null;
-		}
+        InputStream is = this.getResourceAsStream(resourceName, loader, reload);
+        if (is == null) {
+            return null;
+        }
 
-		BufferedInputStream bis = new BufferedInputStream(is);
+        BufferedInputStream bis = new BufferedInputStream(is);
 
-		// Let's do the timewalk
-		boolean isUtf8;
-		bis.mark(3);
-		{
-			byte[] buf = new byte[3];
-			readFully(bis, buf);
+        // Let's do the timewalk
+        boolean isUtf8;
+        bis.mark(3);
+        {
+            byte[] buf = new byte[3];
+            readFully(bis, buf);
 
-			// the BOM is 0xEF,0xBB,0xBF
-			isUtf8 = buf[0] == (byte) 0xEF && buf[1] == (byte) 0xBB && buf[2] == (byte) 0xBF;
-		}
-		bis.reset();
+            // the BOM is 0xEF,0xBB,0xBF
+            isUtf8 = buf[0] == (byte) 0xEF && buf[1] == (byte) 0xBB && buf[2] == (byte) 0xBF;
+        }
+        bis.reset();
 
-		if (isUtf8) {
-			log.info("Found UTF-8 locale file " + resourceName);
-		}
+        if (isUtf8) {
+            log.info("Found UTF-8 locale file " + resourceName);
+        }
 
-		Charset charset = isUtf8 ? StandardCharsets.UTF_8 : StandardCharsets.ISO_8859_1;
-		Reader reader = new InputStreamReader(bis, charset);
+        Charset charset = isUtf8 ? StandardCharsets.UTF_8 : StandardCharsets.ISO_8859_1;
+        Reader reader = new InputStreamReader(bis, charset);
 
-		try {
-			PropertyResourceBundle bundle = new PropertyResourceBundle(reader);
-			reader.close();
+        try {
+            PropertyResourceBundle bundle = new PropertyResourceBundle(reader);
+            reader.close();
 
-			return bundle;
-		} finally {
-			// Just in case of exception...
-			reader.close();
-		}
-	}
+            return bundle;
+        } finally {
+            // Just in case of exception...
+            reader.close();
+        }
+    }
 
-	private InputStream getResourceAsStream(String resourceName, ClassLoader loader, boolean reload) throws IOException {
-		if (reload) {
-			URL url = loader.getResource(resourceName);
-			if (url != null) {
-				URLConnection conn = url.openConnection();
-				if (conn != null) {
-					conn.setUseCaches(false);
+    private InputStream getResourceAsStream(String resourceName, ClassLoader loader, boolean reload) throws IOException {
+        if (reload) {
+            URL url = loader.getResource(resourceName);
+            if (url != null) {
+                URLConnection conn = url.openConnection();
+                if (conn != null) {
+                    conn.setUseCaches(false);
 
-					return conn.getInputStream();
-				}
-			}
-		}
+                    return conn.getInputStream();
+                }
+            }
+        }
 
-		return loader.getResourceAsStream(resourceName);
-	}
+        return loader.getResourceAsStream(resourceName);
+    }
 
-	private void readFully(InputStream is, byte[] buf) throws IOException {
-		int offset = 0;
-		int length = buf.length;
+    private void readFully(InputStream is, byte[] buf) throws IOException {
+        int offset = 0;
+        int length = buf.length;
 
-		while (length > 0) {
-			int n = is.read(buf, offset, length);
-			if (n == -1) {
-				throw new EOFException();
-			}
+        while (length > 0) {
+            int n = is.read(buf, offset, length);
+            if (n == -1) {
+                throw new EOFException();
+            }
 
-			offset += n;
-			length -= n;
-		}
-	}
+            offset += n;
+            length -= n;
+        }
+    }
 }

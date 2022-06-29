@@ -10,8 +10,8 @@ import lombok.Data;
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class XstsError {
-	@JsonProperty("XErr")
-	private long xErr;
-	private String message;
-	private String redirect;
+    @JsonProperty("XErr")
+    private long xErr;
+    private String message;
+    private String redirect;
 }

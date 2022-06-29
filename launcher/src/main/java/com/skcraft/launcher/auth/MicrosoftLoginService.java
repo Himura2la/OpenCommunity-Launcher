@@ -35,8 +35,8 @@ public class MicrosoftLoginService implements LoginService {
      *
      * @param oauthDone Callback called when OAuth is complete and automatic login is about to begin.
      * @return Valid {@link Session} instance representing the logged-in player.
-     * @throws IOException if any I/O error occurs.
-     * @throws InterruptedException if the current thread is interrupted
+     * @throws IOException             if any I/O error occurs.
+     * @throws InterruptedException    if the current thread is interrupted
      * @throws AuthenticationException if authentication fails in any way, this is thrown with a human-useful message.
      */
     public Session login(Receiver oauthDone) throws IOException, InterruptedException, AuthenticationException {

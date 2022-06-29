@@ -15,16 +15,16 @@ import java.util.List;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MinecraftArguments {
-	@JsonProperty("game")
-	@JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
-	@JsonSerialize(contentUsing = MinecraftArgumentsSerializer.class)
-	@JsonDeserialize(contentUsing = MinecraftArgumentsDeserializer.class)
-	private List<GameArgument> gameArguments = new ArrayList<>();
+    @JsonProperty("game")
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
+    @JsonSerialize(contentUsing = MinecraftArgumentsSerializer.class)
+    @JsonDeserialize(contentUsing = MinecraftArgumentsDeserializer.class)
+    private List<GameArgument> gameArguments = new ArrayList<>();
 
-	@JsonProperty("jvm")
-	@JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
-	@JsonSerialize(contentUsing =  MinecraftArgumentsSerializer.class)
-	@JsonDeserialize(contentUsing = MinecraftArgumentsDeserializer.class)
-	private List<GameArgument> jvmArguments = new ArrayList<>();
+    @JsonProperty("jvm")
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
+    @JsonSerialize(contentUsing = MinecraftArgumentsSerializer.class)
+    @JsonDeserialize(contentUsing = MinecraftArgumentsDeserializer.class)
+    private List<GameArgument> jvmArguments = new ArrayList<>();
 }
 
