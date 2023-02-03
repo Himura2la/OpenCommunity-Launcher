@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class FabricMod {
-    private String id;
-    private String name;
-    private String version;
+public class FabricMod implements Versionable {
+	private String id;
+	private String name;
+	private String version;
 }
