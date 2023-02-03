@@ -100,8 +100,7 @@ public class LoginDialog extends JDialog {
         loginButton.setFont(loginButton.getFont().deriveFont(Font.BOLD));
 
         formPanel.addRow(message);
-        formPanel.addRow(new JLabel(SharedLocale.tr("login.idEmail")), usernameText);
-        formPanel.addRow(new JLabel(SharedLocale.tr("login.password")), passwordText);
+        formPanel.addRow(new JLabel(SharedLocale.tr("login.nickname")), usernameText);
         buttonsPanel.setBorder(BorderFactory.createEmptyBorder(26, 13, 13, 13));
 
         //buttonsPanel.addElement(recoverButton);
@@ -126,13 +125,7 @@ public class LoginDialog extends JDialog {
     @SuppressWarnings("deprecation")
     private void prepareLogin() {
         if (!usernameText.getText().isEmpty()) {
-            String password = passwordText.getText();
-
-            if (password == null || password.isEmpty()) {
-                setResult(new OfflineSession(usernameText.getText()));
-            } else {
-                attemptLogin(usernameText.getText(), password);
-            }
+            setResult(new OfflineSession(usernameText.getText()));
         } else {
             SwingHelper.showErrorDialog(this, SharedLocale.tr("login.noLoginError"), SharedLocale.tr("login.noLoginTitle"));
         }
