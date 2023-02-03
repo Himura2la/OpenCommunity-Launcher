@@ -7,10 +7,7 @@ import com.skcraft.concurrency.ObservableFuture;
 import com.skcraft.concurrency.ProgressObservable;
 import com.skcraft.concurrency.SettableProgress;
 import com.skcraft.launcher.Launcher;
-import com.skcraft.launcher.auth.LoginService;
-import com.skcraft.launcher.auth.OfflineSession;
-import com.skcraft.launcher.auth.SavedSession;
-import com.skcraft.launcher.auth.Session;
+import com.skcraft.launcher.auth.*;
 import com.skcraft.launcher.persistence.Persistence;
 import com.skcraft.launcher.swing.LinedBoxPanel;
 import com.skcraft.launcher.swing.SwingHelper;
@@ -184,31 +181,36 @@ public class AccountSelectDialog extends JDialog {
     }
 
     private void attemptExistingLogin(SavedSession session) {
+        setResult(new OfflineSession(session.getUsername()));
 
         if (accountList.getSelectedValue() != null) {
             new OfflineSession(session.getUsername());
         }
-        setResult(new OfflineSession(session.getUsername()));
-
-        LoginService loginService = launcher.getLoginService(session.getType());
-        RestoreSessionCallable callable = new RestoreSessionCallable(loginService, session);
-
-        ObservableFuture<Session> future = new ObservableFuture<>(launcher.getExecutor().submit(callable), callable);
-        Futures.addCallback(future, new FutureCallback<Session>() {
-            @Override
-            public void onSuccess(Session result) {
-                setResult(result);
+        else {
+            LoginService loginService = null;
+            if (session.getType() == UserType.MICROSOFT) {
+                loginService = launcher.getLoginService(session.getType());
             }
 
-            @Override
-            public void onFailure(Throwable t) {
-                t.printStackTrace();
-            }
-        }, SwingExecutor.INSTANCE);
+            RestoreSessionCallable callable = new RestoreSessionCallable(loginService, session);
 
-        ProgressDialog.showProgress(this, future, SharedLocale.tr("login.loggingInTitle"),
-                SharedLocale.tr("login.loggingInStatus"));
-        SwingHelper.addErrorDialogCallback(this, future);
+            ObservableFuture<Session> future = new ObservableFuture<>(launcher.getExecutor().submit(callable), callable);
+            Futures.addCallback(future, new FutureCallback<Session>() {
+                @Override
+                public void onSuccess(Session result) {
+                    setResult(result);
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    t.printStackTrace();
+                }
+            }, SwingExecutor.INSTANCE);
+
+            ProgressDialog.showProgress(this, future, SharedLocale.tr("login.loggingInTitle"),
+                    SharedLocale.tr("login.loggingInStatus"));
+            SwingHelper.addErrorDialogCallback(this, future);
+        }
     }
 
     @RequiredArgsConstructor

@@ -166,15 +166,6 @@ public final class Launcher {
     }
 
     /**
-     * Get the Yggdrasil login service.
-     *
-     * @return the Yggdrasil (legacy) login service
-     */
-    public YggdrasilLoginService getYggdrasil() {
-        return new YggdrasilLoginService(HttpRequest.url(getProperties().getProperty("yggdrasilAuthUrl")), accounts.getClientId());
-    }
-
-    /**
      * Get the Microsoft login service.
      *
      * @return the Microsoft (current) login service
@@ -184,11 +175,7 @@ public final class Launcher {
     }
 
     public LoginService getLoginService(UserType type) {
-        if (type == UserType.MICROSOFT) {
-            return getMicrosoftLogin();
-        } else {
-            return getYggdrasil();
-        }
+        return getMicrosoftLogin();
     }
 
     /**

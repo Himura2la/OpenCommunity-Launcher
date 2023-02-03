@@ -131,26 +131,6 @@ public class LoginDialog extends JDialog {
         }
     }
 
-    private void attemptLogin(String username, String password) {
-        LoginCallable callable = new LoginCallable(username, password);
-        ObservableFuture<Session> future = new ObservableFuture<Session>(
-                launcher.getExecutor().submit(callable), callable);
-
-        Futures.addCallback(future, new FutureCallback<Session>() {
-            @Override
-            public void onSuccess(Session result) {
-                setResult(result);
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-            }
-        }, SwingExecutor.INSTANCE);
-
-        ProgressDialog.showProgress(this, future, SharedLocale.tr("login.loggingInTitle"), SharedLocale.tr("login.loggingInStatus"));
-        SwingHelper.addErrorDialogCallback(this, future);
-    }
-
     private void setResult(Session session) {
         this.session = session;
         dispose();
@@ -160,42 +140,5 @@ public class LoginDialog extends JDialog {
     public static class ReloginDetails {
         private final String username;
         private final String message;
-    }
-
-    @RequiredArgsConstructor
-    private class LoginCallable implements Callable<Session>, ProgressObservable {
-        private final String username;
-        private final String password;
-
-        @Override
-        public Session call() throws AuthenticationException, IOException, InterruptedException {
-            YggdrasilLoginService service = launcher.getYggdrasil();
-            Session identity = service.login(username, password);
-
-            // The presence of the identity (profile in Mojang terms) corresponds to whether the account
-            // owns the game, so we need to check that
-            if (password != null) {
-                // Set offline enabled flag to true
-                Configuration config = launcher.getConfig();
-                if (!config.isOfflineEnabled()) {
-                    config.setOfflineEnabled(true);
-                    Persistence.commitAndForget(config);
-                }
-
-                return identity;
-            } else {
-                throw new AuthenticationException("Minecraft not owned", SharedLocale.tr("login.minecraftNotOwnedError"));
-            }
-        }
-
-        @Override
-        public double getProgress() {
-            return -1;
-        }
-
-        @Override
-        public String getStatus() {
-            return SharedLocale.tr("login.loggingInStatus");
-        }
     }
 }
