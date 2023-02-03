@@ -264,7 +264,7 @@ public class HttpDownloader implements Downloader {
                 request = HttpRequest.get(url);
                 request.setResumeInfo(retryDetails).execute().expectResponseCode(200).saveContent(file);
             } catch (IOException e) {
-                log.log(Level.WARNING, "Failed to download " + url, e);
+                log.log(Level.WARNING, "Failed to download " + url);
 
                 // We only want to try to resume a partial download if the request succeeded before
                 // throwing an exception halfway through. If it didn't succeed, just throw the error.
