@@ -67,7 +67,7 @@ public class SharedLocale {
      *
      * <p>If the string is not available, then ${key}:args will be returned.</p>
      *
-     * @param key the key
+     * @param key  the key
      * @param args arguments
      * @return a translated string
      */
@@ -89,7 +89,7 @@ public class SharedLocale {
      * Load a shared resource bundle.
      *
      * @param baseName the bundle name
-     * @param locale the locale
+     * @param locale   the locale
      * @return true if loaded successfully
      */
     public static boolean loadBundle(@NonNull String baseName, @NonNull Locale locale) {

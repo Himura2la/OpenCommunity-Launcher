@@ -8,10 +8,10 @@ import java.util.HashMap;
 
 @Data
 public class InstallExtras {
-	private final File contentDir;
-	private final HashMap<String, LocalLoader> loaders;
+    private final File contentDir;
+    private final HashMap<String, LocalLoader> loaders;
 
-	public LocalLoader getLoader(String key) {
-		return loaders.get(key);
-	}
+    public LocalLoader getLoader(String key) {
+        return loaders.get(key);
+    }
 }

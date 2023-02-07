@@ -58,7 +58,8 @@ public class DownloadFrame extends JFrame {
     private void initComponents() {
         buttonsPanel.addGlue();
         buttonsPanel.addElement(cancelButton);
-        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(30, 13, 13, 13));;
+        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(30, 13, 13, 13));
+        ;
 
         progressBar.setIndeterminate(true);
         progressBar.setMinimum(0);
@@ -110,7 +111,7 @@ public class DownloadFrame extends JFrame {
         } else {
             if (timer == null) {
                 timer = new Timer();
-                timer.scheduleAtFixedRate(new UpdateProgress( downloader), 500, 500);
+                timer.scheduleAtFixedRate(new UpdateProgress(downloader), 500, 500);
             }
         }
     }

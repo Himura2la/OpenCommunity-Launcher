@@ -13,23 +13,27 @@ import com.skcraft.concurrency.ProgressObservable;
 import com.skcraft.launcher.Configuration;
 import com.skcraft.launcher.Launcher;
 import com.skcraft.launcher.auth.AuthenticationException;
-import com.skcraft.launcher.auth.Session;
 import com.skcraft.launcher.auth.OfflineSession;
+import com.skcraft.launcher.auth.Session;
 import com.skcraft.launcher.auth.YggdrasilLoginService;
 import com.skcraft.launcher.persistence.Persistence;
-import com.skcraft.launcher.swing.*;
+import com.skcraft.launcher.swing.FormPanel;
+import com.skcraft.launcher.swing.LinedBoxPanel;
+import com.skcraft.launcher.swing.SwingHelper;
+import com.skcraft.launcher.swing.TextFieldPopupMenu;
 import com.skcraft.launcher.util.SharedLocale;
 import com.skcraft.launcher.util.SwingExecutor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 /**
@@ -38,25 +42,24 @@ import java.util.concurrent.Callable;
 public class LoginDialog extends JDialog {
 
     private final Launcher launcher;
-    @Getter public Session session;
-    @Getter public Boolean force_update;
-
+    private final JLabel message = new JLabel(SharedLocale.tr("login.defaultMessage"));
     private final JTextField usernameText = new JTextField();
-    private final JTextField idCombo = new JTextField();
     private final JPasswordField passwordText = new JPasswordField();
     private final JButton loginButton = new JButton(SharedLocale.tr("login.login"));
+    //private final LinkButton recoverButton = new LinkButton(SharedLocale.tr("login.recoverAccount"));
     private final JButton cancelButton = new JButton(SharedLocale.tr("button.cancel"));
     private final FormPanel formPanel = new FormPanel();
-    private final JButton offlineButton = new JButton(SharedLocale.tr("accounts.add"));
     private final LinedBoxPanel buttonsPanel = new LinedBoxPanel(true);
+    @Getter
+    private Session session;
 
     /**
      * Create a new login dialog.
      *
-     * @param owner the owner
+     * @param owner    the owner
      * @param launcher the launcher
      */
-    public LoginDialog(Window owner, @NonNull Launcher launcher) {
+    public LoginDialog(Window owner, @NonNull Launcher launcher, Optional<ReloginDetails> reloginDetails) {
         super(owner, ModalityType.DOCUMENT_MODAL);
 
         this.launcher = launcher;
@@ -76,6 +79,18 @@ public class LoginDialog extends JDialog {
                 dispose();
             }
         });
+
+        reloginDetails.ifPresent(details -> message.setText(details.message));
+    }
+
+    public static Session showLoginRequest(Window owner, Launcher launcher) {
+        return showLoginRequest(owner, launcher, null);
+    }
+
+    public static Session showLoginRequest(Window owner, Launcher launcher, ReloginDetails reloginDetails) {
+        LoginDialog dialog = new LoginDialog(owner, launcher, Optional.ofNullable(reloginDetails));
+        dialog.setVisible(true);
+        return dialog.getSession();
     }
 
     @SuppressWarnings("unchecked")
@@ -84,61 +99,36 @@ public class LoginDialog extends JDialog {
 
         loginButton.setFont(loginButton.getFont().deriveFont(Font.BOLD));
 
-        formPanel.addRow(new JLabel(SharedLocale.tr("login.name")), idCombo);
+        formPanel.addRow(message);
+        formPanel.addRow(new JLabel(SharedLocale.tr("login.nickname")), usernameText);
         buttonsPanel.setBorder(BorderFactory.createEmptyBorder(26, 13, 13, 13));
 
+        //buttonsPanel.addElement(recoverButton);
         buttonsPanel.addGlue();
-        //buttonsPanel.addElement(off_update);
-        buttonsPanel.addElement(offlineButton);
+        buttonsPanel.addElement(loginButton);
         buttonsPanel.addElement(cancelButton);
 
         add(formPanel, BorderLayout.CENTER);
         add(buttonsPanel, BorderLayout.SOUTH);
 
-        getRootPane().setDefaultButton(offlineButton);
+        getRootPane().setDefaultButton(loginButton);
 
-        //passwordText.setComponentPopupMenu(TextFieldPopupMenu.INSTANCE);
+        passwordText.setComponentPopupMenu(TextFieldPopupMenu.INSTANCE);
 
-        //recoverButton.addActionListener(
-        //        ActionListeners.openURL(recoverButton, launcher.getProperties().getProperty("resetPasswordUrl")));
+        /*recoverButton.addActionListener(
+                ActionListeners.openURL(recoverButton, launcher.getProperties().getProperty("resetPasswordUrl")));*/
 
-        offlineButton.addActionListener(e -> prepareLogin());
+        loginButton.addActionListener(e -> prepareLogin());
         cancelButton.addActionListener(e -> dispose());
     }
 
-    public void prepareLogin() {
-        final String name = idCombo.getText();
-
-           new OfflineSession(name);
-        String playerName = idCombo.getText();
-        if (idCombo.getSelectedText() != null) {
-            playerName = idCombo.getSelectedText().toString();
+    @SuppressWarnings("deprecation")
+    private void prepareLogin() {
+        if (!usernameText.getText().isEmpty()) {
+            setResult(new OfflineSession(usernameText.getText()));
+        } else {
+            SwingHelper.showErrorDialog(this, SharedLocale.tr("login.noLoginError"), SharedLocale.tr("login.noLoginTitle"));
         }
-        if (playerName.contains("@")) {
-            playerName = launcher.getProperties().getProperty("" +
-                    "");
-        }
-        setResult(new OfflineSession(playerName));
-    }
-
-    private void attemptLogin(String username) {
-        LoginCallable callable = new LoginCallable(username);
-        ObservableFuture<Session> future = new ObservableFuture<Session>(
-                launcher.getExecutor().submit(callable), callable);
-
-        Futures.addCallback(future, new FutureCallback<Session>() {
-            @Override
-            public void onSuccess(Session result) {
-                setResult(result);
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-            }
-        }, SwingExecutor.INSTANCE);
-
-        ProgressDialog.showProgress(this, future, SharedLocale.tr("login.loggingInTitle"), SharedLocale.tr("login.loggingInStatus"));
-        SwingHelper.addErrorDialogCallback(this, future);
     }
 
     private void setResult(Session session) {
@@ -146,37 +136,9 @@ public class LoginDialog extends JDialog {
         dispose();
     }
 
-    public static Session showLoginRequest(Window owner, Launcher launcher) {
-        LoginDialog dialog = new LoginDialog(owner, launcher);
-        dialog.setVisible(true);
-        return dialog.getSession();
-    }
-
-    @RequiredArgsConstructor
-    private class LoginCallable implements Callable<Session>, ProgressObservable {
+    @Data
+    public static class ReloginDetails {
         private final String username;
-
-        @Override
-        public Session call() throws AuthenticationException, IOException, InterruptedException {
-            YggdrasilLoginService service = launcher.getYggdrasil();
-            Session identity = service.login(username);
-
-                Configuration config = launcher.getConfig();
-                    config.setOfflineEnabled(true);
-                    Persistence.commitAndForget(config);
-
-                return identity;
-        }
-
-        @Override
-        public double getProgress() {
-            return -1;
-        }
-
-        @Override
-        public String getStatus() {
-            return SharedLocale.tr("login.loggingInStatus");
-        }
+        private final String message;
     }
-
 }

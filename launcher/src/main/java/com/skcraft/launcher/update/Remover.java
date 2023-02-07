@@ -61,7 +61,7 @@ public class Remover implements Callable<Instance>, ProgressObservable {
 
         if (failures.size() > 0) {
             throw new LauncherException(failures.size() + " failed to delete",
-                     tr("instanceDeleter.failures", failures.size()));
+                    tr("instanceDeleter.failures", failures.size()));
         }
 
         return instance;

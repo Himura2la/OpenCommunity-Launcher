@@ -60,6 +60,7 @@ public class ManifestEntryTableModel extends AbstractTableModel {
                 return null;
         }
     }
+
     @Override
     public void setValueAt(Object value, int rowIndex, int columnIndex) {
         switch (columnIndex) {

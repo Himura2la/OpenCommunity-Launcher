@@ -61,5 +61,4 @@ public class FancyLauncher {
             return new FancyLauncherFrame(launcher);
         }
     }
-
 }

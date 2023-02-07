@@ -1,21 +1,21 @@
 package com.skcraft.launcher.model.minecraft;
 
 public enum Side {
-	CLIENT("client"),
-	SERVER("server");
+    CLIENT("client"),
+    SERVER("server");
 
-	private String name;
+    private final String name;
 
-	Side(String name) {
-		this.name = name;
-	}
+    Side(String name) {
+        this.name = name;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	@Override
-	public String toString() {
-		return name;
-	}
+    @Override
+    public String toString() {
+        return name;
+    }
 }

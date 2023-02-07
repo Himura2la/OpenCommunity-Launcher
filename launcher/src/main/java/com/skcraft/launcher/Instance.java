@@ -33,12 +33,18 @@ public class Instance implements Comparable<Instance> {
     private Date lastAccessed;
     @JsonProperty("launch")
     private LaunchModifier launchModifier;
+    private InstanceSettings settings = new InstanceSettings();
 
-    @JsonIgnore private File dir;
-    @JsonIgnore private URL manifestURL;
-    @JsonIgnore private int priority;
-    @JsonIgnore private boolean selected;
-    @JsonIgnore private boolean local;
+    @JsonIgnore
+    private File dir;
+    @JsonIgnore
+    private URL manifestURL;
+    @JsonIgnore
+    private int priority;
+    @JsonIgnore
+    private boolean selected;
+    @JsonIgnore
+    private boolean local;
 
     /**
      * Get the tile of the instance, which might be the same as the

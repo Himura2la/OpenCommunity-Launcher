@@ -27,10 +27,6 @@ public class Environment {
         return new Environment(detectPlatform(), System.getProperty("os.version"), System.getProperty("os.arch"));
     }
 
-    public String getArchBits() {
-        return arch.contains("64") ? "64" : "32";
-    }
-
     /**
      * Detect the current platform.
      *
@@ -52,6 +48,10 @@ public class Environment {
             return Platform.LINUX;
 
         return Platform.UNKNOWN;
+    }
+
+    public String getArchBits() {
+        return arch.contains("64") ? "64" : "32";
     }
 
 }

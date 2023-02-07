@@ -37,7 +37,8 @@ public class NemModList {
                 .execute()
                 .expectResponseCode(200)
                 .returnContent()
-                .asJson(new TypeReference<List<ModEntry>>() {});
+                .asJson(new TypeReference<List<ModEntry>>() {
+                });
 
         Map<String, ModEntry> index = Maps.newHashMap();
 

@@ -41,20 +41,19 @@ import static com.skcraft.launcher.util.SharedLocale.tr;
 @Log
 public class LauncherFrame extends JFrame {
 
+    @Getter
+    protected final InstanceTable instancesTable = new InstanceTable();
+    protected final InstanceTableModel instancesModel;
+    @Getter
+    protected final JScrollPane instanceScroll = new JScrollPane(instancesTable);
+    protected final JButton launchButton = createPrimaryButton(SharedLocale.tr("launcher.launch"));
+    protected final JButton refreshButton = new JButton(SharedLocale.tr("launcher.checkForUpdates"));
+    protected final JButton optionsButton = createPrimaryButton(SharedLocale.tr("launcher.options"));
+    protected final JButton selfUpdateButton = new JButton(SharedLocale.tr("launcher.updateLauncher"));
+    protected final JCheckBox updateCheck = createCheckBox(SharedLocale.tr("launcher.downloadUpdates"));
     private final Launcher launcher;
-
-    @Getter
-    private final InstanceTable instancesTable = new InstanceTable();
-    private final InstanceTableModel instancesModel;
-    @Getter
-    private final JScrollPane instanceScroll = new JScrollPane(instancesTable);
-    private WebpagePanel webView;
-    private JSplitPane splitPane;
-    private final JButton launchButton = new JButton(SharedLocale.tr("launcher.launch"));
-    private final JButton refreshButton = new JButton(SharedLocale.tr("launcher.checkForUpdates"));
-    private final JButton optionsButton = new JButton(SharedLocale.tr("launcher.options"));
-    private final JButton selfUpdateButton = new JButton(SharedLocale.tr("launcher.updateLauncher"));
-    private final JCheckBox updateCheck = new JCheckBox(SharedLocale.tr("launcher.downloadUpdates"));
+    protected WebpagePanel webView;
+    protected JSplitPane splitPane;
 
     /**
      * Create a new frame.
@@ -83,7 +82,7 @@ public class LauncherFrame extends JFrame {
         });
     }
 
-    private void initComponents() {
+    protected void initComponents() {
         JPanel container = createContainerPanel();
         container.setLayout(new MigLayout("fill, insets dialog", "[][]push[][]", "[grow][]"));
 
@@ -96,7 +95,7 @@ public class LauncherFrame extends JFrame {
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName().equals("pendingUpdate")) {
                     selfUpdateButton.setVisible((Boolean) evt.getNewValue());
-
+                    refreshButton.setVisible(false);
                 }
             }
         });
@@ -115,7 +114,7 @@ public class LauncherFrame extends JFrame {
         container.add(optionsButton);
         container.add(launchButton);
 
-        add(container, BorderLayout.CENTER);
+        add(container);
 
         instancesModel.addTableModelListener(new TableModelListener() {
             @Override
@@ -141,6 +140,7 @@ public class LauncherFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 launcher.getUpdateManager().performUpdate(LauncherFrame.this);
+                refreshButton.setVisible(true);
             }
         });
 
@@ -176,6 +176,18 @@ public class LauncherFrame extends JFrame {
         return new JPanel();
     }
 
+    protected JButton createPrimaryButton(String name) {
+        return new JButton(name);
+    }
+
+    protected JButton createSecondaryButton(String name) {
+        return new JButton(name);
+    }
+
+    protected JCheckBox createCheckBox(String name) {
+        return new JCheckBox(name);
+    }
+
     /**
      * Return the news panel.
      *
@@ -189,9 +201,9 @@ public class LauncherFrame extends JFrame {
      * Popup the menu for the instances.
      *
      * @param component the component
-     * @param x mouse X
-     * @param y mouse Y
-     * @param selected the selected instance, possibly null
+     * @param x         mouse X
+     * @param y         mouse Y
+     * @param selected  the selected instance, possibly null
      */
     private void popupInstanceMenu(Component component, int x, int y, final Instance selected) {
         JPopupMenu popup = new JPopupMenu();
@@ -238,6 +250,12 @@ public class LauncherFrame extends JFrame {
                         dir.mkdirs();
                         SwingHelper.setClipboard(dir.getAbsolutePath());
                     }
+                });
+                popup.add(menuItem);
+
+                menuItem = new JMenuItem(SharedLocale.tr("instance.openSettings"));
+                menuItem.addActionListener(e -> {
+                    InstanceSettingsDialog.open(this, selected);
                 });
                 popup.add(menuItem);
 
@@ -389,6 +407,7 @@ public class LauncherFrame extends JFrame {
         @Override
         public void gameClosed() {
             launcher.showLauncherWindow();
+            launcher.getUpdateManager().checkForUpdate();
         }
     }
 

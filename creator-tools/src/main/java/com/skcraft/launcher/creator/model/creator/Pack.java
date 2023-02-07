@@ -18,8 +18,10 @@ import java.io.File;
 public class Pack {
 
     private String location;
-    @JsonIgnore private Workspace workspace;
-    @JsonIgnore private BuilderConfig cachedConfig;
+    @JsonIgnore
+    private Workspace workspace;
+    @JsonIgnore
+    private BuilderConfig cachedConfig;
 
     @JsonIgnore
     public File getDirectory() {

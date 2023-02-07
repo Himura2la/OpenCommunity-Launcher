@@ -13,17 +13,17 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoaderManifest {
-	private List<Library> libraries;
-	private Map<String, SidedData<String>> sidedData;
-	private List<DownloadableFile> downloadableFiles;
+    private List<Library> libraries;
+    private Map<String, SidedData<String>> sidedData;
+    private List<DownloadableFile> downloadableFiles;
 
-	public Library findLibrary(String name) {
-		for (Library library : getLibraries()) {
-			if (library.getName().equals(name)) {
-				return library;
-			}
-		}
+    public Library findLibrary(String name) {
+        for (Library library : getLibraries()) {
+            if (library.getName().equals(name)) {
+                return library;
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 }

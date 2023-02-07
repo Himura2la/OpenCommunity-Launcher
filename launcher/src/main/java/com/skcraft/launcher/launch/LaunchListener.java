@@ -8,10 +8,10 @@ package com.skcraft.launcher.launch;
 
 public interface LaunchListener {
 
-    public void instancesUpdated();
+    void instancesUpdated();
 
-    public void gameStarted();
+    void gameStarted();
 
-    public void gameClosed();
+    void gameClosed();
 
 }

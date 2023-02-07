@@ -7,6 +7,7 @@
 package com.skcraft.launcher.builder;
 
 import lombok.NonNull;
+import lombok.extern.java.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.io.IOException;
  * path (which may be modified by dropping certain directory entries),
  * and call {@link #onFile(java.io.File, String)} with each file.
  */
+@Log
 public abstract class DirectoryWalker {
 
     public enum DirectoryBehavior {
@@ -40,13 +42,17 @@ public abstract class DirectoryWalker {
      * @throws IOException thrown on I/O error
      */
     public final void walk(@NonNull File dir) throws IOException {
+        long start = System.currentTimeMillis();
         walk(dir, "");
+        long stop = System.currentTimeMillis();
+        log.info("Directory walk complete in " + (stop - start) + "ms.");
+        this.onWalkComplete();
     }
 
     /**
      * Recursively walk the given directory and keep track of the relative path.
      *
-     * @param dir the directory
+     * @param dir      the directory
      * @param basePath the base path
      * @throws IOException
      */
@@ -67,7 +73,8 @@ public abstract class DirectoryWalker {
                         case IGNORE:
                             walk(file, newPath);
                             break;
-                        case SKIP: break;
+                        case SKIP:
+                            break;
                     }
                 } else {
                     onFile(file, basePath + file.getName());
@@ -80,7 +87,7 @@ public abstract class DirectoryWalker {
      * Return the behavior for the given directory name.
      *
      * @param name the directory name
-     * @return the behavor
+     * @return the behavior
      */
     protected DirectoryBehavior getBehavior(String name) {
         return DirectoryBehavior.CONTINUE;
@@ -89,11 +96,18 @@ public abstract class DirectoryWalker {
     /**
      * Callback on each file.
      *
-     * @param file the file
+     * @param file    the file
      * @param relPath the relative path
      * @throws IOException thrown on I/O error
      */
     protected abstract void onFile(File file, String relPath) throws IOException;
 
 
+    /**
+     * Called after the walk is completed.
+     */
+    protected void onWalkComplete() {
+    }
+
+    ;
 }

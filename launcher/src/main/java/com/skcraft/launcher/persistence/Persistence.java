@@ -7,8 +7,8 @@
 package com.skcraft.launcher.persistence;
 
 import com.fasterxml.jackson.core.PrettyPrinter;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter.Lf2SpacesIndenter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.ByteSink;
 import com.google.common.io.ByteSource;
@@ -37,13 +37,13 @@ import java.util.logging.Level;
 @Log
 public final class Persistence {
 
+    public static final DefaultPrettyPrinter L2F_LIST_PRETTY_PRINTER;
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final WeakHashMap<Object, ByteSink> bound = new WeakHashMap<Object, ByteSink>();
-    public static final DefaultPrettyPrinter L2F_LIST_PRETTY_PRINTER;
 
     static {
         L2F_LIST_PRETTY_PRINTER = new DefaultPrettyPrinter();
-        L2F_LIST_PRETTY_PRINTER.indentArraysWith(Lf2SpacesIndenter.instance);
+        L2F_LIST_PRETTY_PRINTER.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
     }
 
     private Persistence() {
@@ -53,7 +53,7 @@ public final class Persistence {
      * Bind an object to a path where the object will be saved.
      *
      * @param object the object
-     * @param sink the byte sink
+     * @param sink   the byte sink
      */
     public static void bind(@NonNull Object object, @NonNull ByteSink sink) {
         synchronized (bound) {
@@ -90,21 +90,21 @@ public final class Persistence {
      *
      * @param object the object
      */
-    public static void commitAndForget(@NonNull Object object)  {
+    public static void commitAndForget(@NonNull Object object) {
         try {
             commit(object);
         } catch (IOException e) {
-            log.log(Level.WARNING, "Failed to save " + object.getClass() + ": " + object.toString(), e);
+            log.log(Level.WARNING, "Failed to save " + object.getClass() + ": " + object, e);
         }
     }
 
     /**
      * Read an object from a byte source, without binding it.
      *
-     * @param source byte source
-     * @param cls the class
+     * @param source     byte source
+     * @param cls        the class
      * @param returnNull true to return null if the object could not be loaded
-     * @param <V> the type of class
+     * @param <V>        the type of class
      * @return an object
      */
     public static <V> V read(ByteSource source, Class<V> cls, boolean returnNull) {
@@ -144,10 +144,10 @@ public final class Persistence {
     /**
      * Read an object from file, without binding it.
      *
-     * @param file the file
-     * @param cls the class
+     * @param file       the file
+     * @param cls        the class
      * @param returnNull true to return null if the object could not be loaded
-     * @param <V> the type of class
+     * @param <V>        the type of class
      * @return an object
      */
     public static <V> V read(File file, Class<V> cls, boolean returnNull) {
@@ -159,8 +159,8 @@ public final class Persistence {
      * Read an object from file, without binding it.
      *
      * @param file the file
-     * @param cls the class
-     * @param <V> the type of class
+     * @param cls  the class
+     * @param <V>  the type of class
      * @return an object
      */
     public static <V> V read(File file, Class<V> cls) {
@@ -170,10 +170,10 @@ public final class Persistence {
     /**
      * Read an object from file.
      *
-     * @param file the file
-     * @param cls the class
+     * @param file       the file
+     * @param cls        the class
      * @param returnNull true to return null if the object could not be loaded
-     * @param <V> the type of class
+     * @param <V>        the type of class
      * @return an object
      */
     public static <V> V load(File file, Class<V> cls, boolean returnNull) {
@@ -198,8 +198,8 @@ public final class Persistence {
      * the given class by using its no-arg constructor.</p>
      *
      * @param file the file
-     * @param cls the class
-     * @param <V> the type of class
+     * @param cls  the class
+     * @param <V>  the type of class
      * @return an object
      */
     public static <V> V load(File file, Class<V> cls) {
@@ -209,7 +209,7 @@ public final class Persistence {
     /**
      * Write an object to file.
      *
-     * @param file the file
+     * @param file   the file
      * @param object the object
      * @throws java.io.IOException on I/O error
      */
@@ -220,8 +220,8 @@ public final class Persistence {
     /**
      * Write an object to file.
      *
-     * @param file the file
-     * @param object the object
+     * @param file          the file
+     * @param object        the object
      * @param prettyPrinter a pretty printer to use, or null
      * @throws java.io.IOException on I/O error
      */
@@ -237,7 +237,7 @@ public final class Persistence {
     /**
      * Write an object to a string.
      *
-     * @param object the object
+     * @param object        the object
      * @param prettyPrinter a pretty printer to use, or null
      * @throws java.io.IOException on I/O error
      */

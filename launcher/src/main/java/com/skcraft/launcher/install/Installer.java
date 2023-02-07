@@ -25,11 +25,12 @@ import static com.skcraft.launcher.util.SharedLocale.tr;
 @Log
 public class Installer implements ProgressObservable {
 
-    @Getter private final File tempDir;
+    @Getter
+    private final File tempDir;
     private final HttpDownloader downloader;
 
-    private TaskQueue mainQueue = new TaskQueue();
-    private TaskQueue lateQueue = new TaskQueue();
+    private final TaskQueue mainQueue = new TaskQueue();
+    private final TaskQueue lateQueue = new TaskQueue();
 
     private transient TaskQueue activeQueue;
 

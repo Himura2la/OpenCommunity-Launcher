@@ -12,6 +12,8 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.skcraft.launcher.LauncherException;
+import com.skcraft.launcher.util.Environment;
+import com.skcraft.launcher.util.Platform;
 import com.skcraft.launcher.util.SharedLocale;
 import com.skcraft.launcher.util.SwingExecutor;
 import lombok.NonNull;
@@ -33,6 +35,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
@@ -67,6 +70,11 @@ public final class SwingHelper {
                 .replace("&", "&amp;");
     }
 
+    public static String htmlWrap(String message) {
+        // To force the label to wrap, convert the message to broken HTML
+        return "<html><div style=\"width: 250px\">" + htmlEscape(message);
+    }
+
     public static void setClipboard(String text) {
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
                 new StringSelection(text), clipboardOwner);
@@ -84,7 +92,7 @@ public final class SwingHelper {
     /**
      * Opens a system web browser for the given URL.
      *
-     * @param url the URL
+     * @param url             the URL
      * @param parentComponent the component from which to show any errors
      */
     public static void openURL(@NonNull String url, @NonNull Component parentComponent) {
@@ -97,15 +105,27 @@ public final class SwingHelper {
     /**
      * Opens a system web browser for the given URL.
      *
-     * @param url the URL
+     * @param url             the URL
      * @param parentComponent the component from which to show any errors
      */
     public static void openURL(URL url, Component parentComponent) {
         try {
-            Desktop.getDesktop().browse(url.toURI());
+            openURL(url.toURI());
         } catch (IOException e) {
             showErrorDialog(parentComponent, tr("errors.openUrlError", url.toString()), SharedLocale.tr("errorTitle"));
         } catch (URISyntaxException e) {
+            log.log(Level.WARNING, "Malformed URL; this is a programming error!", e);
+        }
+    }
+
+    public static void openURL(URI url) throws IOException {
+        try {
+            Desktop.getDesktop().browse(url);
+        } catch (UnsupportedOperationException e) {
+            if (Environment.detectPlatform() == Platform.LINUX) {
+                // Try xdg-open instead
+                Runtime.getRuntime().exec(new String[]{"xdg-open", url.toString()});
+            }
         }
     }
 
@@ -115,8 +135,8 @@ public final class SwingHelper {
      *
      * @param parentComponent the frame from which the dialog is displayed, otherwise
      *                        null to use the default frame
-     * @param message the message to display
-     * @param title the title string for the dialog
+     * @param message         the message to display
+     * @param title           the title string for the dialog
      * @see #showMessageDialog(java.awt.Component, String, String, String, int) for details
      */
     public static void showErrorDialog(Component parentComponent, @NonNull String message,
@@ -130,9 +150,9 @@ public final class SwingHelper {
      *
      * @param parentComponent the frame from which the dialog is displayed, otherwise
      *                        null to use the default frame
-     * @param message the message to display
-     * @param title the title string for the dialog
-     * @param throwable the exception, or null if there is no exception to show
+     * @param message         the message to display
+     * @param title           the title string for the dialog
+     * @param throwable       the exception, or null if there is no exception to show
      * @see #showMessageDialog(java.awt.Component, String, String, String, int) for details
      */
     public static void showErrorDialog(Component parentComponent, @NonNull String message,
@@ -162,10 +182,10 @@ public final class SwingHelper {
      *
      * @param parentComponent the frame from which the dialog is displayed, otherwise
      *                        null to use the default frame
-     * @param message the message to display
-     * @param title the title string for the dialog
-     * @param messageType see {@link javax.swing.JOptionPane#showMessageDialog(java.awt.Component, Object, String, int)}
-     *                    for available message types
+     * @param message         the message to display
+     * @param title           the title string for the dialog
+     * @param messageType     see {@link javax.swing.JOptionPane#showMessageDialog(java.awt.Component, Object, String, int)}
+     *                        for available message types
      */
     public static void showMessageDialog(final Component parentComponent,
                                          @NonNull final String message,
@@ -174,8 +194,7 @@ public final class SwingHelper {
                                          final int messageType) {
 
         if (SwingUtilities.isEventDispatchThread()) {
-            // To force the label to wrap, convert the message to broken HTML
-            String htmlMessage = "<html><div style=\"width: 250px\">" + htmlEscape(message);
+            String htmlMessage = htmlWrap(message);
 
             JPanel panel = new JPanel(new BorderLayout(0, detailsText != null ? 20 : 0));
 
@@ -222,8 +241,8 @@ public final class SwingHelper {
      * Asks the user a binary yes or no question.
      *
      * @param parentComponent the component
-     * @param message the message to display
-     * @param title the title string for the dialog
+     * @param message         the message to display
+     * @param title           the title string for the dialog
      * @return whether 'yes' was selected
      */
     public static boolean confirmDialog(final Component parentComponent,
@@ -260,7 +279,7 @@ public final class SwingHelper {
      *
      * @param component component
      */
-    public static void equalWidth(Component ... component) {
+    public static void equalWidth(Component... component) {
         double widest = 0;
         for (Component comp : component) {
             Dimension dim = comp.getPreferredSize();
@@ -280,7 +299,7 @@ public final class SwingHelper {
      *
      * @param components list of components
      */
-    public static void removeOpaqueness(@NonNull Component ... components) {
+    public static void removeOpaqueness(@NonNull Component... components) {
         for (Component component : components) {
             if (component instanceof JComponent) {
                 JComponent jComponent = (JComponent) component;
@@ -343,7 +362,7 @@ public final class SwingHelper {
      * Focus a component.
      *
      * <p>The focus call happens in {@link javax.swing.SwingUtilities#invokeLater(Runnable)}.</p>
-     * 
+     *
      * @param component the component
      */
     public static void focusLater(@NonNull final Component component) {

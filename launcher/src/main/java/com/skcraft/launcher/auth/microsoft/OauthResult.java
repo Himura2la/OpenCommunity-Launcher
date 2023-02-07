@@ -4,25 +4,27 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 public interface OauthResult {
-	boolean isError();
+    boolean isError();
 
-	@RequiredArgsConstructor
-	class Success implements OauthResult {
-		@Getter private final String authCode;
+    @RequiredArgsConstructor
+    class Success implements OauthResult {
+        @Getter
+        private final String authCode;
 
-		@Override
-		public boolean isError() {
-			return false;
-		}
-	}
+        @Override
+        public boolean isError() {
+            return false;
+        }
+    }
 
-	@RequiredArgsConstructor
-	class Error implements OauthResult {
-		@Getter private final String errorMessage;
+    @RequiredArgsConstructor
+    class Error implements OauthResult {
+        @Getter
+        private final String errorMessage;
 
-		@Override
-		public boolean isError() {
-			return true;
-		}
-	}
+        @Override
+        public boolean isError() {
+            return true;
+        }
+    }
 }

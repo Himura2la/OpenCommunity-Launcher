@@ -96,8 +96,9 @@ public class ObjectSwingMapper {
         });
     }
 
-    public static interface FieldMapping {
+    public interface FieldMapping {
         void copyFromObject();
+
         void copyFromSwing();
     }
 

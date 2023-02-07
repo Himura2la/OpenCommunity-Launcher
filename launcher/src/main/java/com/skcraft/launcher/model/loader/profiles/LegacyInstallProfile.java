@@ -8,14 +8,14 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LegacyInstallProfile {
-	@JsonProperty("install")
-	private InstallData installData;
-	private VersionInfo versionInfo;
+    @JsonProperty("install")
+    private InstallData installData;
+    private VersionInfo versionInfo;
 
-	@Data
-	@JsonIgnoreProperties(ignoreUnknown = true)
-	public static class InstallData {
-		private String path;
-		private String filePath;
-	}
+    @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class InstallData {
+        private String path;
+        private String filePath;
+    }
 }

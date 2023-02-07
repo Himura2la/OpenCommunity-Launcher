@@ -30,10 +30,14 @@ public class Bootstrap {
 
     private static final int BOOTSTRAP_VERSION = 1;
 
-    @Getter private final File baseDir;
-    @Getter private final boolean portable;
-    @Getter private final File binariesDir;
-    @Getter private final Properties properties;
+    @Getter
+    private final File baseDir;
+    @Getter
+    private final boolean portable;
+    @Getter
+    private final File binariesDir;
+    @Getter
+    private final Properties properties;
     private final String[] originalArgs;
 
     public static void main(String[] args) throws Throwable {
@@ -147,18 +151,18 @@ public class Bootstrap {
         String[] launcherArgs;
 
         if (portable) {
-            launcherArgs = new String[] {
+            launcherArgs = new String[]{
                     "--portable",
                     "--dir",
                     baseDir.getAbsolutePath(),
                     "--bootstrap-version",
-                    String.valueOf(BOOTSTRAP_VERSION) };
+                    String.valueOf(BOOTSTRAP_VERSION)};
         } else {
-            launcherArgs = new String[] {
+            launcherArgs = new String[]{
                     "--dir",
                     baseDir.getAbsolutePath(),
                     "--bootstrap-version",
-                    String.valueOf(BOOTSTRAP_VERSION)  };
+                    String.valueOf(BOOTSTRAP_VERSION)};
         }
 
         String[] args = new String[originalArgs.length + launcherArgs.length];
@@ -167,11 +171,11 @@ public class Bootstrap {
 
         log.info("Launching with arguments " + Arrays.toString(args));
 
-        method.invoke(null, new Object[] { args });
+        method.invoke(null, new Object[]{args});
     }
 
     public Class<?> load(File jarFile) throws MalformedURLException, ClassNotFoundException {
-        URL[] urls = new URL[] { jarFile.toURI().toURL() };
+        URL[] urls = new URL[]{jarFile.toURI().toURL()};
         URLClassLoader child = new URLClassLoader(urls, this.getClass().getClassLoader());
         Class<?> clazz = Class.forName(getProperties().getProperty("launcherClass"), true, child);
         return clazz;

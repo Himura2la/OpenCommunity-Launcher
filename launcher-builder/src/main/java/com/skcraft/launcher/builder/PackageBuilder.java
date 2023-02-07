@@ -60,7 +60,8 @@ public class PackageBuilder {
     @Getter
     private boolean prettyPrint = false;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private File baseDir;
 
     private List<Library> loaderLibraries = Lists.newArrayList();
@@ -71,7 +72,7 @@ public class PackageBuilder {
     /**
      * Create a new package builder.
      *
-     * @param mapper the mapper
+     * @param mapper   the mapper
      * @param manifest the manifest
      */
     public PackageBuilder(@NonNull ObjectMapper mapper, @NonNull Manifest manifest) throws IOException {
@@ -168,7 +169,9 @@ public class PackageBuilder {
                     processor = new ModernForgeLoaderProcessor();
                 }
             } else if (BuilderUtils.getZipEntry(jarFile, "fabric-installer.json") != null) {
-            	processor = new FabricLoaderProcessor();
+            	processor = new FabricLoaderProcessor(FabricLoaderProcessor.Variant.FABRIC);
+            } else if (BuilderUtils.getZipEntry(jarFile, "quilt_installer.json") != null) {
+                processor = new FabricLoaderProcessor(FabricLoaderProcessor.Variant.QUILT);
             }
         } finally {
             closer.close();
@@ -204,9 +207,10 @@ public class PackageBuilder {
                 if (!outputPath.exists()) {
                     Files.createParentDirs(outputPath);
                     boolean found = false;
+                    boolean urlEmpty = artifact.getUrl().isEmpty();
 
-                    // Try just the URL, it might be a full URL to the file
-                    if (!artifact.getUrl().isEmpty()) {
+                    // If URL doesn't end with a /, it might be the direct file
+                    if (!urlEmpty && !artifact.getUrl().endsWith("/")) {
                         found = tryDownloadLibrary(library, artifact, artifact.getUrl(), outputPath);
                     }
 
@@ -219,7 +223,7 @@ public class PackageBuilder {
                     }
 
                     // Assume artifact URL is a maven repository URL and try that
-                    if (!found) {
+                    if (!found && !urlEmpty) {
                         URL url = LauncherUtils.concat(url(artifact.getUrl()), artifact.getPath());
                         found = tryDownloadLibrary(library, artifact, url.toString(), outputPath);
                     }
@@ -261,7 +265,9 @@ public class PackageBuilder {
 
         try {
             log.info("Downloading library " + library.getName() + " from " + url + "...");
-            HttpRequest.get(url).execute().expectResponseCode(200).saveContent(tempFile);
+            HttpRequest.get(url).execute().expectResponseCode(200)
+                    .expectContentType("application/java-archive", "application/octet-stream", "application/zip")
+                    .saveContent(tempFile);
         } catch (IOException e) {
             log.info("Could not get file from " + url + ": " + e.getMessage());
             return false;
@@ -341,10 +347,10 @@ public class PackageBuilder {
 
             Version version = releases.find(manifest.getGameVersion());
             VersionManifest versionManifest = HttpRequest.get(url(version.getUrl()))
-                .execute()
-                .expectResponseCode(200)
-                .returnContent()
-                .asJson(VersionManifest.class);
+                    .execute()
+                    .expectResponseCode(200)
+                    .returnContent()
+                    .asJson(VersionManifest.class);
 
             manifest.setVersionManifest(versionManifest);
         }
@@ -367,7 +373,7 @@ public class PackageBuilder {
 
     private static BuilderOptions parseArgs(String[] args) {
         BuilderOptions options = new BuilderOptions();
-        new JCommander(options, args);
+        new JCommander(options).parse(args);
         options.choosePaths();
         return options;
     }
@@ -390,7 +396,7 @@ public class PackageBuilder {
      * Build a package given the arguments.
      *
      * @param args arguments
-     * @throws IOException thrown on I/O error
+     * @throws IOException          thrown on I/O error
      * @throws InterruptedException on interruption
      */
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -407,7 +413,7 @@ public class PackageBuilder {
         // Initialize
         SimpleLogFormatter.configureGlobalLogger();
         ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT);
 
         Manifest manifest = new Manifest();
         manifest.setMinimumVersion(Manifest.MIN_PROTOCOL_VERSION);

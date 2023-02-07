@@ -24,20 +24,21 @@ import static com.skcraft.launcher.util.SharedLocale.tr;
  * A version of the console window that can manage a process.
  */
 public class ProcessConsoleFrame extends ConsoleFrame {
-    
+
+    private final PrintWriter processOut;
     private JButton killButton;
     private JButton minimizeButton;
     private TrayIcon trayIcon;
-
-    @Getter private Process process;
-    @Getter @Setter private boolean killOnClose;
-
-    private PrintWriter processOut;
+    @Getter
+    private Process process;
+    @Getter
+    @Setter
+    private boolean killOnClose;
 
     /**
      * Create a new instance of the frame.
      *
-     * @param numLines the number of log lines
+     * @param numLines     the number of log lines
      * @param colorEnabled whether color is enabled in the log
      */
     public ProcessConsoleFrame(int numLines, boolean colorEnabled) {
@@ -80,7 +81,7 @@ public class ProcessConsoleFrame extends ConsoleFrame {
     }
 
     @Override
-    protected void performClose() {
+    public void performClose() {
         if (hasProcess()) {
             if (killOnClose) {
                 performKill();
@@ -117,7 +118,7 @@ public class ProcessConsoleFrame extends ConsoleFrame {
         buttonsPanel.addGlue();
         buttonsPanel.addElement(killButton);
         buttonsPanel.addElement(minimizeButton);
-        
+
         killButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -131,7 +132,7 @@ public class ProcessConsoleFrame extends ConsoleFrame {
                 contextualClose();
             }
         });
-        
+
         if (!setupTrayIcon()) {
             minimizeButton.setEnabled(true);
         }
@@ -152,7 +153,7 @@ public class ProcessConsoleFrame extends ConsoleFrame {
                 reshow();
             }
         });
-       
+
         PopupMenu popup = new PopupMenu();
         MenuItem item;
 
@@ -174,16 +175,16 @@ public class ProcessConsoleFrame extends ConsoleFrame {
                 performKill();
             }
         });
-       
+
         trayIcon.setPopupMenu(popup);
-       
+
         try {
             SystemTray tray = SystemTray.getSystemTray();
             tray.add(trayIcon);
             return true;
         } catch (AWTException e) {
         }
-        
+
         return false;
     }
 
@@ -219,7 +220,7 @@ public class ProcessConsoleFrame extends ConsoleFrame {
         if (System.getProperty("skcraftLauncher.killWithoutConfirm", "false").equalsIgnoreCase("true")) {
             return true;
         } else {
-            return SwingHelper.confirmDialog(this,  SharedLocale.tr("console.confirmKill"), SharedLocale.tr("console.confirmKillTitle"));
+            return SwingHelper.confirmDialog(this, SharedLocale.tr("console.confirmKill"), SharedLocale.tr("console.confirmKillTitle"));
         }
     }
 

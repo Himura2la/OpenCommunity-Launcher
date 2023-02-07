@@ -14,64 +14,64 @@ import java.util.regex.Pattern;
 
 @Data
 public class Rule {
-	private Action action;
-	private OS os;
-	private Map<String, Boolean> features;
+    private Action action;
+    private OS os;
+    private Map<String, Boolean> features;
 
-	private boolean doesOsMatch(Environment environment) {
-		if (getOs() == null) {
-			return true;
-		} else {
-			return getOs().matches(environment);
-		}
-	}
+    private boolean doesOsMatch(Environment environment) {
+        if (getOs() == null) {
+            return true;
+        } else {
+            return getOs().matches(environment);
+        }
+    }
 
-	private boolean doFeaturesMatch(FeatureList match) {
-		if (getFeatures() == null) return true;
+    private boolean doFeaturesMatch(FeatureList match) {
+        if (getFeatures() == null) return true;
 
-		return match.doesMatch(features);
-	}
+        return match.doesMatch(features);
+    }
 
-	public boolean matches(Environment environment, FeatureList match) {
-		return doesOsMatch(environment) && doFeaturesMatch(match);
-	}
+    public boolean matches(Environment environment, FeatureList match) {
+        return doesOsMatch(environment) && doFeaturesMatch(match);
+    }
 
-	@JsonIgnore
-	public boolean isAllowed() {
-		return action == Action.ALLOW;
-	}
+    @JsonIgnore
+    public boolean isAllowed() {
+        return action == Action.ALLOW;
+    }
 
-	@Data
-	@JsonIgnoreProperties(ignoreUnknown = true)
-	public static class OS {
-		private Platform platform;
-		private Pattern version;
+    public enum Action {
+        ALLOW,
+        DISALLOW;
 
-		@JsonProperty("name")
-		@JsonDeserialize(using = PlatformDeserializer.class)
-		@JsonSerialize(using = PlatformSerializer.class)
-		public Platform getPlatform() {
-			return platform;
-		}
+        @JsonCreator
+        public static Action fromJson(String text) {
+            return valueOf(text.toUpperCase());
+        }
 
-		public boolean matches(Environment environment) {
-			return (getPlatform() == null || getPlatform().equals(environment.getPlatform())) &&
-					(getVersion() == null || getVersion().matcher(environment.getPlatformVersion()).matches());
-		}
-	}
+        @JsonValue
+        public String toJson() {
+            return name().toLowerCase();
+        }
+    }
 
-	public enum Action {
-		ALLOW,
-		DISALLOW;
+    @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class OS {
+        private Platform platform;
+        private Pattern version;
 
-		@JsonCreator
-		public static Action fromJson(String text) {
-			return valueOf(text.toUpperCase());
-		}
+        @JsonProperty("name")
+        @JsonDeserialize(using = PlatformDeserializer.class)
+        @JsonSerialize(using = PlatformSerializer.class)
+        public Platform getPlatform() {
+            return platform;
+        }
 
-		@JsonValue
-		public String toJson() {
-			return name().toLowerCase();
-		}
-	}
+        public boolean matches(Environment environment) {
+            return (getPlatform() == null || getPlatform().equals(environment.getPlatform())) &&
+                    (getVersion() == null || getVersion().matcher(environment.getPlatformVersion()).matches());
+        }
+    }
 }

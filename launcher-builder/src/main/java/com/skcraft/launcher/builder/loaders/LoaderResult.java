@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 public class LoaderResult {
-	private final List<Library> loaderLibraries = Lists.newArrayList();
-	private final List<Library> processorLibraries = Lists.newArrayList();
-	private final List<URL> jarMavens = Lists.newArrayList();
+    private final List<Library> loaderLibraries = Lists.newArrayList();
+    private final List<Library> processorLibraries = Lists.newArrayList();
+    private final List<URL> jarMavens = Lists.newArrayList();
 }

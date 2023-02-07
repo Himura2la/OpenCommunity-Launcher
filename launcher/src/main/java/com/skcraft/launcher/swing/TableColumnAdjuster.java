@@ -39,16 +39,17 @@ import java.util.Map;
  *  <p>From https://tips4java.wordpress.com/2008/11/10/table-column-adjuster/</p>
  */
 public class TableColumnAdjuster implements PropertyChangeListener, TableModelListener {
-    private JTable table;
-    private int spacing;
+    private final JTable table;
+    private final int spacing;
+    private final Map<TableColumn, Integer> columnSizes = new HashMap<TableColumn, Integer>();
     private boolean isColumnHeaderIncluded;
     private boolean isColumnDataIncluded;
     private boolean isOnlyAdjustLarger;
     private boolean isDynamicAdjustment;
-    @Getter @Setter
+    @Getter
+    @Setter
     private int imageIconWidth = 25;
     private int checkBoxWidth;
-    private Map<TableColumn, Integer> columnSizes = new HashMap<TableColumn, Integer>();
 
     /*
      *  Specify the table and use default spacing

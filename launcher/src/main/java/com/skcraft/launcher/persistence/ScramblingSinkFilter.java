@@ -29,6 +29,21 @@ class ScramblingSinkFilter extends ByteSink {
         this.key = key;
     }
 
+    public static Cipher getCipher(int mode, String password)
+            throws InvalidKeySpecException, NoSuchAlgorithmException,
+            NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
+        // These parameters were used for encrypting lastlogin on old official Minecraft launchers
+        Random random = new Random(0x29482c2L);
+        byte[] salt = new byte[8];
+        random.nextBytes(salt);
+        PBEParameterSpec paramSpec = new PBEParameterSpec(salt, 5);
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
+        SecretKey key = factory.generateSecret(new PBEKeySpec(password.toCharArray()));
+        Cipher cipher = Cipher.getInstance("PBEWithMD5AndDES");
+        cipher.init(mode, key, paramSpec);
+        return cipher;
+    }
+
     @Override
     public OutputStream openStream() throws IOException {
         Cipher cipher = null;
@@ -38,21 +53,6 @@ class ScramblingSinkFilter extends ByteSink {
             throw new IOException("Failed to create cipher", e);
         }
         return new CipherOutputStream(delegate.openStream(), cipher);
-    }
-
-    public static Cipher getCipher(int mode, String password)
-            throws InvalidKeySpecException, NoSuchAlgorithmException,
-            NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
-        // These parameters were used for encrypting lastlogin on old official Minecraft launchers
-        Random random = new Random(0x29482c2L);
-        byte salt[] = new byte[8];
-        random.nextBytes(salt);
-        PBEParameterSpec paramSpec = new PBEParameterSpec(salt, 5);
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
-        SecretKey key = factory.generateSecret(new PBEKeySpec(password.toCharArray()));
-        Cipher cipher = Cipher.getInstance("PBEWithMD5AndDES");
-        cipher.init(mode, key, paramSpec);
-        return cipher;
     }
 
 }

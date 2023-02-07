@@ -70,6 +70,49 @@ public class ProgressDialog extends JDialog {
         });
     }
 
+    public static void showProgress(final Window owner, final ObservableFuture<?> future, String title, String message) {
+        showProgress(owner, future, future, title, message);
+    }
+
+    public static void showProgress(final Window owner, final ListenableFuture<?> future, ProgressObservable observable, String title, String message) {
+        final ProgressDialog dialog = new ProgressDialog(owner, title, message) {
+            @Override
+            protected void cancel() {
+                future.cancel(true);
+            }
+        };
+
+        lastDialogRef = new WeakReference<ProgressDialog>(dialog);
+
+        final Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new UpdateProgress(dialog, observable), 400, 400);
+
+        Futures.addCallback(future, new FutureCallback<Object>() {
+            @Override
+            public void onSuccess(Object result) {
+                timer.cancel();
+                dialog.dispose();
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                timer.cancel();
+                dialog.dispose();
+            }
+        }, SwingExecutor.INSTANCE);
+
+        dialog.setVisible(true);
+    }
+
+    public static ProgressDialog getLastDialog() {
+        WeakReference<ProgressDialog> ref = lastDialogRef;
+        if (ref != null) {
+            return ref.get();
+        }
+
+        return null;
+    }
+
     private void setCompactSize() {
         detailsButton.setText(SharedLocale.tr("progress.details"));
         logButton.setVisible(false);
@@ -156,49 +199,6 @@ public class ProgressDialog extends JDialog {
         setLocationRelativeTo(getOwner());
     }
 
-    public static void showProgress(final Window owner, final ObservableFuture<?> future, String title, String message) {
-        showProgress(owner, future, future, title, message);
-    }
-
-    public static void showProgress(final Window owner, final ListenableFuture<?> future, ProgressObservable observable, String title, String message) {
-        final ProgressDialog dialog = new ProgressDialog(owner, title, message) {
-            @Override
-            protected void cancel() {
-                future.cancel(true);
-            }
-        };
-
-        lastDialogRef = new WeakReference<ProgressDialog>(dialog);
-
-        final Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new UpdateProgress(dialog, observable), 400, 400);
-
-        Futures.addCallback(future, new FutureCallback<Object>() {
-            @Override
-            public void onSuccess(Object result) {
-                timer.cancel();
-                dialog.dispose();
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                timer.cancel();
-                dialog.dispose();
-            }
-        }, SwingExecutor.INSTANCE);
-
-        dialog.setVisible(true);
-    }
-
-    public static ProgressDialog getLastDialog() {
-        WeakReference<ProgressDialog> ref = lastDialogRef;
-        if (ref != null) {
-            return ref.get();
-        }
-
-        return null;
-    }
-
     private static class UpdateProgress extends TimerTask {
         private final ProgressDialog dialog;
         private final ProgressObservable observable;
@@ -224,7 +224,7 @@ public class ProgressDialog extends JDialog {
                         progressBar.setValue((int) (progress * 1000));
                         progressBar.setIndeterminate(false);
                     } else {
-                        dialog.setTitle( dialog.defaultTitle);
+                        dialog.setTitle(dialog.defaultTitle);
                         progressBar.setIndeterminate(true);
                     }
 

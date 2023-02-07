@@ -24,7 +24,9 @@ public class FnPatternList {
 
     private List<String> include = Lists.newArrayList();
     private List<String> exclude = Lists.newArrayList();
-    @Getter @Setter @JsonIgnore
+    @Getter
+    @Setter
+    @JsonIgnore
     private EnumSet<FnMatch.Flag> flags = DEFAULT_FLAGS;
 
     public void setInclude(List<String> include) {

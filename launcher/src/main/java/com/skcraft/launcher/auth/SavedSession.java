@@ -10,28 +10,28 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SavedSession {
-	private UserType type;
-	private String uuid;
-	private String username;
-	private String accessToken;
-	private String refreshToken;
-	private byte[] avatarImage;
+    private UserType type;
+    private String uuid;
+    private String username;
+    private String accessToken;
+    private String refreshToken;
+    private byte[] avatarImage;
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
 
-		if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
-		SavedSession that = (SavedSession) o;
+        SavedSession that = (SavedSession) o;
 
-		return getUuid().equals(that.getUuid());
-	}
+        return getUuid().equals(that.getUuid());
+    }
 
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder(17, 37)
-				.append(uuid)
-				.toHashCode();
-	}
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(uuid)
+                .toHashCode();
+    }
 }

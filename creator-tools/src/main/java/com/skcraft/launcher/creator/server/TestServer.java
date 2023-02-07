@@ -12,7 +12,8 @@ import org.eclipse.jetty.server.ServerConnector;
 
 public class TestServer {
 
-    @Getter private final Server server;
+    @Getter
+    private final Server server;
 
     public TestServer(Server server) {
         this.server = server;

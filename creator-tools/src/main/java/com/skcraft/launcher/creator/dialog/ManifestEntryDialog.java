@@ -17,12 +17,17 @@ import java.awt.event.KeyEvent;
 
 public class ManifestEntryDialog extends JDialog {
 
-    @Getter private final JSpinner prioritySpinner = new JSpinner();
-    @Getter private final JTextArea gameKeysText = new JTextArea(5, 30);
-    @Getter private final JCheckBox includeCheck = new JCheckBox("Include in package listing");
+    @Getter
+    private final JSpinner prioritySpinner = new JSpinner();
+    @Getter
+    private final JTextArea gameKeysText = new JTextArea(5, 30);
+    @Getter
+    private final JCheckBox includeCheck = new JCheckBox("Include in package listing");
 
-    @Getter private final JButton okButton = new JButton("OK");
-    @Getter private final JButton cancelButton = new JButton("Cancel");
+    @Getter
+    private final JButton okButton = new JButton("OK");
+    @Getter
+    private final JButton cancelButton = new JButton("Cancel");
 
     public ManifestEntryDialog(Window parent) {
         super(parent, "Modpack Entry", ModalityType.DOCUMENT_MODAL);

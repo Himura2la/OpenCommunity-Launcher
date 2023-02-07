@@ -22,10 +22,10 @@ public final class SimpleLogFormatter extends Formatter {
         StringBuilder sb = new StringBuilder();
 
         sb.append("[")
-            .append(record.getLevel().getLocalizedName().toLowerCase())
-            .append("] ")
-            .append(formatMessage(record))
-            .append(LINE_SEPARATOR);
+                .append(record.getLevel().getLocalizedName().toLowerCase())
+                .append("] ")
+                .append(formatMessage(record))
+                .append(LINE_SEPARATOR);
 
         if (record.getThrown() != null) {
             try {
@@ -40,7 +40,7 @@ public final class SimpleLogFormatter extends Formatter {
 
         return sb.toString();
     }
-    
+
     public static void configureGlobalLogger() {
         Logger globalLogger = Logger.getLogger("");
 
@@ -59,5 +59,5 @@ public final class SimpleLogFormatter extends Formatter {
             log.log(Level.WARNING, "Invalid log level of " + logLevel, e);
         }
     }
-    
+
 }

@@ -11,18 +11,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SidedData<T> {
-	private T client;
-	private T server;
+    private T client;
+    private T server;
 
-	public T resolveFor(Side side) {
-		switch (side) {
-			case CLIENT: return client;
-			case SERVER: return server;
-			default: return null;
-		}
-	}
+    public static <T> SidedData<T> of(T singleValue) {
+        return new SidedData<T>(singleValue, singleValue);
+    }
 
-	public static <T> SidedData<T> of(T singleValue) {
-		return new SidedData<T>(singleValue, singleValue);
-	}
+    public T resolveFor(Side side) {
+        switch (side) {
+            case CLIENT:
+                return client;
+            case SERVER:
+                return server;
+            default:
+                return null;
+        }
+    }
 }

@@ -25,9 +25,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class DirectoryWalker implements Callable<List<File>> {
 
-    @Getter private final File dir;
-    @Getter @Setter private FileFilter fileFilter = pathname -> true;
-    @Getter @Setter private boolean recursive;
+    @Getter
+    private final File dir;
+    @Getter
+    @Setter
+    private FileFilter fileFilter = pathname -> true;
+    @Getter
+    @Setter
+    private boolean recursive;
 
     public DirectoryWalker(File dir) {
         checkNotNull(dir, "dir");

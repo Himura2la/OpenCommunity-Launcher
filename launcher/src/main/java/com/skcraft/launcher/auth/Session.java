@@ -73,6 +73,7 @@ public interface Session {
 
     /**
      * Convert this session to a saved session
+     *
      * @return Saved session that represents this active session
      */
     default SavedSession toSavedSession() {

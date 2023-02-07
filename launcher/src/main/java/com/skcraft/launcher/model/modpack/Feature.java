@@ -13,24 +13,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.google.common.base.Strings;
 import lombok.Data;
 
-@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="name")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "name")
 @Data
 public class Feature implements Comparable<Feature> {
-
-    public enum Recommendation {
-        STARRED,
-        AVOID;
-
-        @JsonCreator
-        public static Recommendation fromJson(String text) {
-            return valueOf(text.toUpperCase());
-        }
-
-        @JsonValue
-        public String toJson() {
-            return name().toLowerCase();
-        };
-    };
 
     private String name;
     private String description;
@@ -65,5 +50,21 @@ public class Feature implements Comparable<Feature> {
     @Override
     public int compareTo(Feature o) {
         return Strings.nullToEmpty(getName()).compareTo(Strings.nullToEmpty(o.getName()));
+    }
+
+    public enum Recommendation {
+        STARRED,
+        AVOID;
+
+        @JsonCreator
+        public static Recommendation fromJson(String text) {
+            return valueOf(text.toUpperCase());
+        }
+
+        @JsonValue
+        public String toJson() {
+            return name().toLowerCase();
+        }
+
     }
 }

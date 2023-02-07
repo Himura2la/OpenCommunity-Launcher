@@ -8,28 +8,28 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BasicInstallProfile {
-	private String profile;
-	private int spec;
+    private String profile;
+    private int spec;
 
-	@JsonProperty("install")
-	private Legacy legacyProfile;
+    @JsonProperty("install")
+    private Legacy legacyProfile;
 
-	@JsonIgnore
-	public boolean isLegacy() {
-		return getLegacyProfile() != null;
-	}
+    @JsonIgnore
+    public boolean isLegacy() {
+        return getLegacyProfile() != null;
+    }
 
-	public String resolveProfileName() {
-		if (isLegacy()) {
-			return getLegacyProfile().getProfileName();
-		} else {
-			return getProfile();
-		}
-	}
+    public String resolveProfileName() {
+        if (isLegacy()) {
+            return getLegacyProfile().getProfileName();
+        } else {
+            return getProfile();
+        }
+    }
 
-	@Data
-	@JsonIgnoreProperties(ignoreUnknown = true)
-	public static class Legacy {
-		private String profileName;
-	}
+    @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Legacy {
+        private String profileName;
+    }
 }

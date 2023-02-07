@@ -67,7 +67,7 @@ public class SharedLocale {
      *
      * <p>If the string is not available, then ${key}:args will be returned.</p>
      *
-     * @param key the key
+     * @param key  the key
      * @param args arguments
      * @return a translated string
      */
@@ -89,14 +89,14 @@ public class SharedLocale {
      * Load a shared resource bundle.
      *
      * @param baseName the bundle name
-     * @param locale the locale
+     * @param locale   the locale
      * @return true if loaded successfully
      */
     public static boolean loadBundle(@NonNull String baseName, @NonNull Locale locale) {
         try {
             SharedLocale.locale = locale;
             bundle = ResourceBundle.getBundle(baseName, locale,
-                    SharedLocale.class.getClassLoader());
+                    SharedLocale.class.getClassLoader(), new LocaleEncodingControl());
             return true;
         } catch (MissingResourceException e) {
             log.log(Level.SEVERE, "Failed to load resource bundle", e);

@@ -6,7 +6,6 @@
 
 package com.skcraft.launcher;
 
-import com.google.common.io.Files;
 import com.skcraft.concurrency.ProgressObservable;
 import com.skcraft.launcher.model.minecraft.Asset;
 import com.skcraft.launcher.model.minecraft.AssetsIndex;
@@ -18,6 +17,7 @@ import lombok.extern.java.Log;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -101,12 +101,13 @@ public class AssetsRoot {
         public File build() throws IOException, LauncherException {
             AssetsRoot.log.info("Building asset virtual tree at '" + destDir.getAbsolutePath() + "'...");
 
+            boolean supportsLinks = true;
             for (Map.Entry<String, Asset> entry : index.getObjects().entrySet()) {
                 File objectPath = getObjectPath(entry.getValue());
                 File virtualPath = new File(destDir, entry.getKey());
                 virtualPath.getParentFile().mkdirs();
                 if (!virtualPath.exists()) {
-                    log.log(Level.INFO, "Copying {0} to {1}...", new Object[] {
+                    log.log(Level.INFO, "Copying {0} to {1}...", new Object[]{
                             objectPath.getAbsolutePath(), virtualPath.getAbsolutePath()});
 
                     if (!objectPath.exists()) {
@@ -114,7 +115,17 @@ public class AssetsRoot {
                         throw new LauncherException("Missing object " + objectPath.getAbsolutePath(), message);
                     }
 
-                    Files.copy(objectPath, virtualPath);
+                    if (supportsLinks) {
+                        try {
+                            Files.createLink(virtualPath.toPath(), objectPath.toPath());
+                        } catch (UnsupportedOperationException e) {
+                            supportsLinks = false;
+                        }
+                    }
+
+                    if (!supportsLinks) {
+                        Files.copy(objectPath.toPath(), virtualPath.toPath());
+                    }
                 }
                 processed++;
             }

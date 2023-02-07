@@ -18,8 +18,8 @@ public interface LoginService {
      *
      * @param savedSession Session to restore
      * @return An authenticated session, which corresponds to a Minecraft account
-     * @throws IOException thrown on I/O error
-     * @throws InterruptedException thrown if interrupted
+     * @throws IOException             thrown on I/O error
+     * @throws InterruptedException    thrown if interrupted
      * @throws AuthenticationException thrown on an authentication error
      */
     Session restore(SavedSession savedSession)

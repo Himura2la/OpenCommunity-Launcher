@@ -31,109 +31,122 @@ import static com.skcraft.launcher.util.SharedLocale.tr;
 @RequiredArgsConstructor
 @Log
 public class ProcessorTask implements InstallTask {
-	private final InstallProcessor processor;
-	private final LoaderManifest loaderManifest;
-	private final Manifest manifest;
-	private final HashMap<String, DownloadableFile.LocalFile> localFiles;
+    private final InstallProcessor processor;
+    private final LoaderManifest loaderManifest;
+    private final Manifest manifest;
+    private final HashMap<String, DownloadableFile.LocalFile> localFiles;
 
-	private transient String message = "";
-	private transient double progress = 0;
+    private transient String message = "";
+    private transient double progress = 0;
 
-	@Override
-	public void execute(Launcher launcher) throws Exception {
-		VersionManifest versionManifest = manifest.getVersionManifest();
-		loaderManifest.getSidedData().put("MINECRAFT_JAR", SidedData.of(launcher.getJarPath(versionManifest).getAbsolutePath()));
+    @Override
+    public void execute(Launcher launcher) throws Exception {
+        VersionManifest versionManifest = manifest.getVersionManifest();
 
-		LoaderSubResolver resolver = new LoaderSubResolver(manifest, loaderManifest,
-				Environment.getInstance(), Side.CLIENT, launcher.getBaseDir(), localFiles);
+        LoaderSubResolver resolver = new LoaderSubResolver(manifest, loaderManifest,
+                Environment.getInstance(), Side.CLIENT, launcher.getLibrariesDir(), localFiles);
 
-		message = "Resolving parameters";
-		List<String> programArgs = processor.resolveArgs(resolver);
-		Map<String, String> outputs = processor.resolveOutputs(resolver);
+        Map<String, SidedData<String>> sidedData = loaderManifest.getSidedData();
+        sidedData.put("ROOT", SidedData.of(launcher.getInstallerDir().getAbsolutePath()));
+        sidedData.put("MINECRAFT_JAR", SidedData.of(launcher.getJarPath(versionManifest).getAbsolutePath()));
+        sidedData.put("LIBRARY_DIR", SidedData.of(launcher.getLibrariesDir().getAbsolutePath()));
+        sidedData.put("MINECRAFT_VERSION", SidedData.of(versionManifest.getId()));
 
-		message = "Finding libraries";
-		Library execFile = loaderManifest.findLibrary(processor.getJar());
-		File jar = launcher.getLibraryFile(execFile);
+        message = "Resolving parameters";
+        List<String> programArgs = processor.resolveArgs(resolver);
+        Map<String, String> outputs = processor.resolveOutputs(resolver);
 
-		JarFile jarFile = new JarFile(jar);
-		String mainClass = jarFile.getManifest().getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);
-		jarFile.close();
+        message = "Finding libraries";
+        Library execFile = loaderManifest.findLibrary(processor.getJar());
+        File jar = launcher.getLibraryFile(execFile);
 
-		if (mainClass == null || mainClass.isEmpty()) {
-			throw new RuntimeException(String.format("Processor jar file '%s' has no main class!", processor.getJar()));
-		}
+        JarFile jarFile = new JarFile(jar);
+        String mainClass = jarFile.getManifest().getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);
+        jarFile.close();
 
-		List<URL> classpath = Lists.newArrayList(jar.toURI().toURL());
-		int i = 0;
-		int total = processor.getClasspath().size();
-		for (String libraryName : processor.getClasspath()) {
-			message = "Adding library " + libraryName;
-			File libraryFile = launcher.getLibraryFile(loaderManifest.findLibrary(libraryName));
-			if (!libraryFile.exists()) {
-				throw new RuntimeException(String.format("Missing library '%s' for processor '%s'",
-						libraryName, processor.getJar()));
-			}
+        if (mainClass == null || mainClass.isEmpty()) {
+            throw new RuntimeException(String.format("Processor jar file '%s' has no main class!", processor.getJar()));
+        }
 
-			classpath.add(libraryFile.toURI().toURL());
-			i++;
-			progress = (double) i / total;
-		}
+        List<URL> classpath = Lists.newArrayList(jar.toURI().toURL());
+        int i = 0;
+        int total = processor.getClasspath().size();
+        for (String libraryName : processor.getClasspath()) {
+            message = "Adding library " + libraryName;
+            File libraryFile = launcher.getLibraryFile(loaderManifest.findLibrary(libraryName));
+            if (!libraryFile.exists()) {
+                throw new RuntimeException(String.format("Missing library '%s' for processor '%s'",
+                        libraryName, processor.getJar()));
+            }
 
-		progress = 0.0;
-		message = "Executing";
+            classpath.add(libraryFile.toURI().toURL());
+            i++;
+            progress = (double) i / total;
+        }
 
-		log.info(String.format("Running processor '%s' with %d args", processor.getJar(), programArgs.size()));
+        progress = 0.0;
+        message = "Executing";
 
-		ClassLoader parent;
-		try {
-			// in java 9+ we need the platform classloader for access to certain modules
-			parent = (ClassLoader) ClassLoader.class.getDeclaredMethod("getPlatformClassLoader")
-					.invoke(null);
-		} catch (Throwable ignored) {
-			// java 8 or below it's a-ok to have no delegate
-			parent = null;
-		}
+        log.info(String.format("Running processor '%s' with %d args", processor.getJar(), programArgs.size()));
+        log.info("Arguments: [" + String.join(", ", programArgs) + "]");
 
-		ClassLoader cl = new URLClassLoader(classpath.toArray(new URL[0]), parent);
-		try {
-			Class<?> mainClazz = Class.forName(mainClass, true, cl);
-			Method main = mainClazz.getDeclaredMethod("main", String[].class);
-			main.invoke(null, (Object) programArgs.toArray(new String[0]));
-		} catch (Throwable e) {
-			throw new RuntimeException(e);
-		}
+        ClassLoader parent;
+        try {
+            // in java 9+ we need the platform classloader for access to certain modules
+            parent = (ClassLoader) ClassLoader.class.getDeclaredMethod("getPlatformClassLoader")
+                    .invoke(null);
+        } catch (Throwable ignored) {
+            // java 8 or below it's a-ok to have no delegate
+            parent = null;
+        }
 
-		message = "Verifying";
-		progress = 1.0;
+        ClassLoader prev = Thread.currentThread().getContextClassLoader();
+        ClassLoader cl = new URLClassLoader(classpath.toArray(new URL[0]), parent);
+        try {
+            Class<?> mainClazz = Class.forName(mainClass, true, cl);
+            Method main = mainClazz.getDeclaredMethod("main", String[].class);
 
-		if (!outputs.isEmpty()) {
-			progress = 0.0;
-			i = 0;
-			total = outputs.size();
-			for (Map.Entry<String, String> output : outputs.entrySet()) {
-				File artifact = new File(output.getKey());
+            // engage spicy mode
+            Thread.currentThread().setContextClassLoader(cl);
+            main.invoke(null, (Object) programArgs.toArray(new String[0]));
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(prev);
+        }
 
-				if (!artifact.exists()) {
-					throw new RuntimeException(String.format("Artifact '%s' missing", output.getKey()));
-				}
+        message = "Verifying";
+        progress = 1.0;
 
-				if (!FileUtils.getShaHash(artifact).equals(output.getValue())) {
-					throw new RuntimeException(String.format("Artifact '%s' has invalid hash!", output.getKey()));
-				}
+        if (!outputs.isEmpty()) {
+            progress = 0.0;
+            i = 0;
+            total = outputs.size();
+            for (Map.Entry<String, String> output : outputs.entrySet()) {
+                File artifact = new File(output.getKey());
 
-				i++;
-				progress = (double) i / total;
-			}
-		}
-	}
+                if (!artifact.exists()) {
+                    throw new RuntimeException(String.format("Artifact '%s' missing", output.getKey()));
+                }
 
-	@Override
-	public double getProgress() {
-		return progress;
-	}
+                if (!FileUtils.getShaHash(artifact).equals(output.getValue())) {
+                    log.warning("Invalid hash, expected " + output.getValue());
+                    throw new RuntimeException(String.format("Artifact '%s' has invalid hash!", output.getKey()));
+                }
 
-	@Override
-	public String getStatus() {
-		return tr("installer.runningProcessor", processor.getJar(), message);
-	}
+                i++;
+                progress = (double) i / total;
+            }
+        }
+    }
+
+    @Override
+    public double getProgress() {
+        return progress;
+    }
+
+    @Override
+    public String getStatus() {
+        return tr("installer.runningProcessor", processor.getJar(), message);
+    }
 }

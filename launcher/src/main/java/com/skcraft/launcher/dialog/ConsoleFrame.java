@@ -31,18 +31,22 @@ public class ConsoleFrame extends JFrame {
 
     private static ConsoleFrame globalFrame;
 
-    @Getter private final Image trayRunningIcon;
-    @Getter private final Image trayClosedIcon;
+    @Getter
+    private final Image trayRunningIcon;
+    @Getter
+    private final Image trayClosedIcon;
 
-    @Getter private final MessageLog messageLog;
-    @Getter private LinedBoxPanel buttonsPanel;
+    @Getter
+    private final MessageLog messageLog;
+    @Getter
+    private LinedBoxPanel buttonsPanel;
 
     private boolean registeredGlobalLog = false;
 
     /**
      * Construct the frame.
      *
-     * @param numLines number of lines to show at a time
+     * @param numLines     number of lines to show at a time
      * @param colorEnabled true to enable a colored console
      */
     public ConsoleFrame(int numLines, boolean colorEnabled) {
@@ -51,9 +55,9 @@ public class ConsoleFrame extends JFrame {
 
     /**
      * Construct the frame.
-     * 
-     * @param title the title of the window
-     * @param numLines number of lines to show at a time
+     *
+     * @param title        the title of the window
+     * @param numLines     number of lines to show at a time
      * @param colorEnabled true to enable a colored console
      */
     public ConsoleFrame(@NonNull String title, int numLines, boolean colorEnabled) {
@@ -74,6 +78,28 @@ public class ConsoleFrame extends JFrame {
                 performClose();
             }
         });
+    }
+
+    public static void showMessages() {
+        ConsoleFrame frame = globalFrame;
+        if (frame == null) {
+            frame = new ConsoleFrame(10000, false);
+            globalFrame = frame;
+            frame.setTitle(SharedLocale.tr("console.launcherConsoleTitle"));
+            frame.registerLoggerHandler();
+            frame.setVisible(true);
+        } else {
+            frame.setVisible(true);
+            frame.registerLoggerHandler();
+            frame.requestFocus();
+        }
+    }
+
+    public static void hideMessages() {
+        ConsoleFrame frame = globalFrame;
+        if (frame != null) {
+            frame.setVisible(false);
+        }
     }
 
     /**
@@ -118,7 +144,7 @@ public class ConsoleFrame extends JFrame {
     /**
      * Attempt to perform window close.
      */
-    protected void performClose() {
+    public void performClose() {
         messageLog.detachGlobalHandler();
         messageLog.clear();
         registeredGlobalLog = false;
@@ -145,28 +171,6 @@ public class ConsoleFrame extends JFrame {
                 messageLog.log(tr("console.pasteFailed", err), messageLog.asError());
             }
         });
-    }
-
-    public static void showMessages() {
-        ConsoleFrame frame = globalFrame;
-        if (frame == null) {
-            frame = new ConsoleFrame(10000, false);
-            globalFrame = frame;
-            frame.setTitle(SharedLocale.tr("console.launcherConsoleTitle"));
-            frame.registerLoggerHandler();
-            frame.setVisible(true);
-        } else {
-            frame.setVisible(true);
-            frame.registerLoggerHandler();
-            frame.requestFocus();
-        }
-    }
-
-    public static void hideMessages() {
-        ConsoleFrame frame = globalFrame;
-        if (frame != null) {
-            frame.setVisible(false);
-        }
     }
 
 }

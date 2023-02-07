@@ -61,7 +61,7 @@ public class InstanceTableModel extends AbstractTableModel {
     public void setValueAt(Object value, int rowIndex, int columnIndex) {
         switch (columnIndex) {
             case 0:
-                instances.get(rowIndex).setSelected((boolean) (Boolean) value);
+                instances.get(rowIndex).setSelected((Boolean) value);
                 break;
             case 1:
             default:

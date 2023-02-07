@@ -35,9 +35,9 @@ public class HttpRequest implements Closeable, ProgressObservable {
 
     private final ObjectMapper mapper = new ObjectMapper();
     private final Map<String, String> headers = new HashMap<String, String>();
-    private String method;
     @Getter
     private final URL url;
+    private String method;
     private String contentType;
     private byte[] body;
     private HttpURLConnection conn;
@@ -57,6 +57,76 @@ public class HttpRequest implements Closeable, ProgressObservable {
     private HttpRequest(String method, URL url) {
         this.method = method;
         this.url = url;
+    }
+
+    /**
+     * Perform a GET request.
+     *
+     * @param url the URL
+     * @return a new request object
+     */
+    public static HttpRequest get(URL url) {
+        return request("GET", url);
+    }
+
+    /**
+     * Perform a POST request.
+     *
+     * @param url the URL
+     * @return a new request object
+     */
+    public static HttpRequest post(URL url) {
+        return request("POST", url);
+    }
+
+    /**
+     * Perform a request.
+     *
+     * @param method the method
+     * @param url    the URL
+     * @return a new request object
+     */
+    public static HttpRequest request(String method, URL url) {
+        return new HttpRequest(method, url);
+    }
+
+    /**
+     * Create a new {@link java.net.URL} and throw a {@link RuntimeException} if the URL
+     * is not valid.
+     *
+     * @param url the url
+     * @return a URL object
+     * @throws RuntimeException if the URL is invalid
+     */
+    public static URL url(String url) {
+        try {
+            return new URL(url);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * URL may contain spaces and other nasties that will cause a failure.
+     *
+     * @param existing the existing URL to transform
+     * @return the new URL, or old one if there was a failure
+     */
+    private static URL reformat(URL existing) {
+        try {
+            URL url = new URL(existing.toString());
+            URI uri = new URI(
+                    url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(),
+                    url.getPath(), url.getQuery(), url.getRef());
+            url = uri.toURL();
+            return url;
+        } catch (MalformedURLException e) {
+            log.warning("Failed to reformat url " + existing + ", using unformatted version.");
+            return existing;
+        } catch (URISyntaxException e) {
+            log.warning("Failed to reformat url " + existing + ", using unformatted version.");
+            return existing;
+        }
     }
 
     /**
@@ -214,11 +284,11 @@ public class HttpRequest implements Closeable, ProgressObservable {
      * Continue if the response code matches, otherwise call the provided function
      * to generate an exception.
      *
-     * @param code HTTP status code to continue on.
+     * @param code    HTTP status code to continue on.
      * @param onError Function invoked when the code does not match, should return an error that will be thrown.
      * @return this object if successful
      * @throws Exception either an {@link IOException} on I/O error or a user-defined {@link Exception} subclass
-     *         if the code does not match.
+     *                   if the code does not match.
      */
     public <E extends Exception> HttpRequest expectResponseCodeOr(int code, HttpFunction<HttpRequest, E> onError)
             throws E, IOException, InterruptedException {
@@ -229,6 +299,28 @@ public class HttpRequest implements Closeable, ProgressObservable {
         E exc = onError.call(this);
         close();
         throw exc;
+    }
+
+    /**
+     * Continue if the content type matches, otherwise throw an exception
+     *
+     * @param expectedTypes Expected content-type(s)
+     * @return this object
+     * @throws IOException Unexpected content-type or other error
+     */
+    public HttpRequest expectContentType(String... expectedTypes) throws IOException {
+        if (conn == null) throw new IllegalArgumentException("No connection has been made!");
+
+        String contentType = conn.getHeaderField("Content-Type");
+        for (String expectedType : expectedTypes) {
+            if (expectedType.equals(contentType)) {
+                return this;
+            }
+        }
+
+        close();
+        throw new IOException(String.format("Did not get expected content type '%s', instead got '%s'.",
+                String.join(" | ", expectedTypes), contentType));
     }
 
     /**
@@ -254,6 +346,20 @@ public class HttpRequest implements Closeable, ProgressObservable {
         return inputStream;
     }
 
+    public boolean isSuccessCode() throws IOException {
+        int code = getResponseCode();
+        return code >= 200 && code < 300;
+    }
+
+    /**
+     * Check if a connection was ever made
+     *
+     * @return True if a connection is available, false otherwise
+     */
+    public boolean isConnected() {
+        return conn != null;
+    }
+
     /**
      * Buffer the returned response.
      *
@@ -265,6 +371,7 @@ public class HttpRequest implements Closeable, ProgressObservable {
         if (inputStream == null) {
             throw new IllegalArgumentException("No input stream available");
         }
+
 
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -387,82 +494,21 @@ public class HttpRequest implements Closeable, ProgressObservable {
     }
 
     /**
-     * Perform a GET request.
-     *
-     * @param url the URL
-     * @return a new request object
-     */
-    public static HttpRequest get(URL url) {
-        return request("GET", url);
-    }
-
-    /**
-     * Perform a POST request.
-     *
-     * @param url the URL
-     * @return a new request object
-     */
-    public static HttpRequest post(URL url) {
-        return request("POST", url);
-    }
-
-    /**
-     * Perform a request.
-     *
-     * @param method the method
-     * @param url    the URL
-     * @return a new request object
-     */
-    public static HttpRequest request(String method, URL url) {
-        return new HttpRequest(method, url);
-    }
-
-    /**
-     * Create a new {@link java.net.URL} and throw a {@link RuntimeException} if the URL
-     * is not valid.
-     *
-     * @param url the url
-     * @return a URL object
-     * @throws RuntimeException if the URL is invalid
-     */
-    public static URL url(String url) {
-        try {
-            return new URL(url);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * URL may contain spaces and other nasties that will cause a failure.
-     *
-     * @param existing the existing URL to transform
-     * @return the new URL, or old one if there was a failure
-     */
-    private static URL reformat(URL existing) {
-        try {
-            URL url = new URL(existing.toString());
-            URI uri = new URI(
-                    url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(),
-                    url.getPath(), url.getQuery(), url.getRef());
-            url = uri.toURL();
-            return url;
-        } catch (MalformedURLException e) {
-            log.warning("Failed to reformat url " + existing.toString() + ", using unformatted version.");
-            return existing;
-        } catch (URISyntaxException e) {
-            log.warning("Failed to reformat url " + existing.toString() + ", using unformatted version.");
-            return existing;
-        }
-    }
-
-    /**
      * Used with {@link #bodyForm(Form)}.
      */
     public final static class Form {
         public final List<String> elements = new ArrayList<String>();
 
         private Form() {
+        }
+
+        /**
+         * Create a new form.
+         *
+         * @return a new form
+         */
+        public static Form form() {
+            return new Form();
         }
 
         /**
@@ -496,15 +542,12 @@ public class HttpRequest implements Closeable, ProgressObservable {
             }
             return builder.toString();
         }
+    }
 
-        /**
-         * Create a new form.
-         *
-         * @return a new form
-         */
-        public static Form form() {
-            return new Form();
-        }
+    @Data
+    public static class PartialDownloadInfo {
+        private final long expectedLength;
+        private final long currentLength;
     }
 
     /**
@@ -557,7 +600,7 @@ public class HttpRequest implements Closeable, ProgressObservable {
          * @return the object
          * @throws java.io.IOException on I/O error
          */
-        public <T> T asJson(TypeReference type) throws IOException {
+        public <T> T asJson(TypeReference<T> type) throws IOException {
             return mapper.readValue(asString("UTF-8"), type);
         }
 
@@ -619,12 +662,6 @@ public class HttpRequest implements Closeable, ProgressObservable {
 
             return this;
         }
-    }
-
-    @Data
-    public static class PartialDownloadInfo {
-        private final long expectedLength;
-        private final long currentLength;
     }
 
 }

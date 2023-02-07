@@ -23,6 +23,12 @@ public class SelectionKeeper implements ListSelectionListener, ListDataListener 
         this.list = list;
     }
 
+    public static void attach(@NonNull JList list) {
+        SelectionKeeper s = new SelectionKeeper(list);
+        list.addListSelectionListener(s);
+        list.getModel().addListDataListener(s);
+    }
+
     public void intervalAdded(ListDataEvent e) {
         list.setSelectedValue(lastSelected, true);
     }
@@ -39,12 +45,6 @@ public class SelectionKeeper implements ListSelectionListener, ListDataListener 
         if (!e.getValueIsAdjusting()) {
             lastSelected = list.getSelectedValue();
         }
-    }
-
-    public static void attach(@NonNull JList list) {
-        SelectionKeeper s = new SelectionKeeper(list);
-        list.addListSelectionListener(s);
-        list.getModel().addListDataListener(s);
     }
 
 }

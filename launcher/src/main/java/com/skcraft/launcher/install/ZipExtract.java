@@ -22,9 +22,12 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 
 public class ZipExtract implements Runnable {
 
-    @Getter private final ByteSource source;
-    @Getter private final File destination;
-    @Getter @Setter
+    @Getter
+    private final ByteSource source;
+    @Getter
+    private final File destination;
+    @Getter
+    @Setter
     private List<String> exclude;
 
     public ZipExtract(@NonNull ByteSource source, @NonNull File destination) {

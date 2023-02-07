@@ -62,7 +62,8 @@ public class ModInfoReader {
                     try {
                         mods = mapper.readValue(content, ForgeModManifest.class).getMods();
                     } catch (JsonMappingException | JsonParseException e) {
-                        mods = mapper.readValue(content, new TypeReference<List<ForgeModInfo>>() {});
+                        mods = mapper.readValue(content, new TypeReference<List<ForgeModInfo>>() {
+                        });
                     }
 
                     if (mods != null) {
@@ -102,10 +103,15 @@ public class ModInfoReader {
     public interface ModInfo {
 
         String getModId();
+
         String getName();
+
         String getDescription();
+
         String getVersion();
+
         String getGameVersion();
+
         String getUrl();
 
     }

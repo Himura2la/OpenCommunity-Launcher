@@ -11,12 +11,17 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 import com.skcraft.launcher.model.modpack.FileInstall;
 import com.skcraft.launcher.model.modpack.Manifest;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.extern.java.Log;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.logging.Level;
 
 /**
  * Walks a path and adds hashed path versions to the given
@@ -24,6 +29,8 @@ import java.io.IOException;
  */
 @Log
 public class ClientFileCollector extends DirectoryWalker {
+
+    public static final String URL_FILE_SUFFIX = ".url.txt";
 
     private final Manifest manifest;
     private final PropertiesApplicator applicator;
@@ -33,9 +40,9 @@ public class ClientFileCollector extends DirectoryWalker {
     /**
      * Create a new collector.
      *
-     * @param manifest the manifest
+     * @param manifest   the manifest
      * @param applicator applies properties to manifest entries
-     * @param destDir the destination directory to copy the hashed objects
+     * @param destDir    the destination directory to copy the hashed objects
      */
     public ClientFileCollector(@NonNull Manifest manifest, @NonNull PropertiesApplicator applicator,
                                @NonNull File destDir) {
@@ -49,31 +56,55 @@ public class ClientFileCollector extends DirectoryWalker {
         return getDirectoryBehavior(name);
     }
 
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    private static class FileEntry {
+        final File file;
+        final String relPath;
+    }
+
+    private final ArrayList<FileEntry> fileEntries = new ArrayList<>();
+
     @Override
     protected void onFile(File file, String relPath) throws IOException {
-        if (file.getName().endsWith(FileInfoScanner.FILE_SUFFIX)
-                || file.getName().endsWith(FileUrlScanner.URL_FILE_SUFFIX)) {
+        if (file.getName().endsWith(FileInfoScanner.FILE_SUFFIX) || file.getName().endsWith(URL_FILE_SUFFIX)) {
             return;
         }
+        fileEntries.add(new FileEntry(file, relPath));
+    }
 
+    @Override
+    protected void onWalkComplete() {
+        long start = System.currentTimeMillis();
+        fileEntries.parallelStream().forEach(fileEntry -> {
+            try {
+                addFile(fileEntry.file, fileEntry.relPath);
+            } catch (IOException e) {
+                log.log(Level.SEVERE, "Error processing file.", e);
+                throw new RuntimeException(e);
+            }
+        });
+        long stop = System.currentTimeMillis();
+        log.info("Finished processing " + fileEntries.size() + " files in " + (stop - start) + "ms.");
+        fileEntries.clear();
+    }
+
+    private void addFile(File file, String relPath) throws IOException {
         FileInstall entry = new FileInstall();
         String hash = Files.hash(file, hf).toString();
         String to = FilenameUtils.separatorsToUnix(FilenameUtils.normalize(relPath));
-        
+
         // url.txt override file
-        File urlFile = new File(file.getAbsoluteFile().getParentFile(),
-                file.getName() + FileUrlScanner.URL_FILE_SUFFIX);
+        File urlFile = new File(file.getAbsoluteFile().getParentFile(), file.getName() + URL_FILE_SUFFIX);
         String location;
         boolean copy = true;
-        if (urlFile.exists() && FileUrlScanner.isEnabled()) {
-            FileUrlRedirect redirect = FileUrlRedirect.fromFile(urlFile);
-
-            location = redirect.getUrl().toString();
+        if (urlFile.exists() && !System.getProperty("com.skcraft.builder.ignoreURLOverrides", "false").equalsIgnoreCase("true")) {
+            location = Files.readFirstLine(urlFile, Charset.defaultCharset());
             copy = false;
         } else {
             location = hash.substring(0, 2) + "/" + hash.substring(2, 4) + "/" + hash;
         }
-        
+
         File destPath = new File(destDir, location);
         entry.setHash(hash);
         entry.setLocation(location);

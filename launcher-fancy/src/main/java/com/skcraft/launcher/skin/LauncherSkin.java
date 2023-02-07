@@ -6,17 +6,10 @@
 
 package com.skcraft.launcher.skin;
 
-import org.pushingpixels.substance.api.*;
-import org.pushingpixels.substance.api.painter.border.ClassicBorderPainter;
-import org.pushingpixels.substance.api.painter.border.CompositeBorderPainter;
-import org.pushingpixels.substance.api.painter.border.DelegateBorderPainter;
-import org.pushingpixels.substance.api.painter.decoration.FlatDecorationPainter;
-import org.pushingpixels.substance.api.painter.fill.FractionBasedFillPainter;
-import org.pushingpixels.substance.api.painter.highlight.ClassicHighlightPainter;
 import org.pushingpixels.substance.api.skin.GraphiteSkin;
 
 public class LauncherSkin extends GraphiteSkin {
-
+/*
     public LauncherSkin() {
         ColorSchemes schemes = SubstanceSkin.getColorSchemes("com/skcraft/launcher/skin/graphite.colorschemes");
 
@@ -89,6 +82,6 @@ public class LauncherSkin extends GraphiteSkin {
         this.highlightBorderPainter = new ClassicBorderPainter();
 
         this.watermarkScheme = schemes.get("Graphite Watermark");
-    }
+    }*/
 
 }

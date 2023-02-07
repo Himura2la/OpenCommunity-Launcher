@@ -7,16 +7,12 @@ import com.skcraft.concurrency.ObservableFuture;
 import com.skcraft.concurrency.ProgressObservable;
 import com.skcraft.concurrency.SettableProgress;
 import com.skcraft.launcher.Launcher;
-import com.skcraft.launcher.auth.LoginService;
-import com.skcraft.launcher.auth.OfflineSession;
-import com.skcraft.launcher.auth.SavedSession;
-import com.skcraft.launcher.auth.Session;
+import com.skcraft.launcher.auth.*;
 import com.skcraft.launcher.persistence.Persistence;
 import com.skcraft.launcher.swing.LinedBoxPanel;
 import com.skcraft.launcher.swing.SwingHelper;
 import com.skcraft.launcher.util.SharedLocale;
 import com.skcraft.launcher.util.SwingExecutor;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import javax.swing.*;
@@ -24,225 +20,244 @@ import java.awt.*;
 import java.util.concurrent.Callable;
 
 public class AccountSelectDialog extends JDialog {
-	private final JList<SavedSession> accountList;
-	private final JButton loginButton = new JButton(SharedLocale.tr("accounts.play"));
-	private final JButton cancelButton = new JButton(SharedLocale.tr("button.cancel"));
-	private final JButton addMojangButton = new JButton(SharedLocale.tr("accounts.addMojang"));
-	private final JButton addMicrosoftButton = new JButton(SharedLocale.tr("accounts.addMicrosoft"));
-	private final JButton removeSelected = new JButton(SharedLocale.tr("accounts.removeSelected"));
-	private final JButton offlineButton = new JButton(SharedLocale.tr("login.playOffline"));
-	private final LinedBoxPanel buttonsPanel = new LinedBoxPanel(true);
+    private final JList<SavedSession> accountList;
+    private final JButton loginButton = new JButton(SharedLocale.tr("accounts.play"));
+    private final JButton cancelButton = new JButton(SharedLocale.tr("button.cancel"));
+    //private final JButton addCrackedButton = new JButton(SharedLocale.tr("accounts.addCracked"));
+    private final JButton addOfflineButton = new JButton(SharedLocale.tr("accounts.addOffline"));
+    private final JButton addMicrosoftButton = new JButton(SharedLocale.tr("accounts.addMicrosoft"));
+    private final JButton removeSelected = new JButton(SharedLocale.tr("accounts.removeSelected"));
+    //private final JButton offlineButton = new JButton(SharedLocale.tr("login.playOffline"));
+    private final LinedBoxPanel buttonsPanel = new LinedBoxPanel(true);
 
-	private final Launcher launcher;
-	private Session selected;
+    private final Launcher launcher;
+    private Session selected;
 
-	public AccountSelectDialog(Window owner, Launcher launcher) {
-		super(owner, ModalityType.DOCUMENT_MODAL);
+    public AccountSelectDialog(Window owner, Launcher launcher) {
+        super(owner, ModalityType.DOCUMENT_MODAL);
 
-		this.launcher = launcher;
-		this.accountList = new JList<>(launcher.getAccounts());
+        this.launcher = launcher;
+        this.accountList = new JList<>(launcher.getAccounts());
 
-		setTitle(SharedLocale.tr("accounts.title"));
-		initComponents();
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		setMinimumSize(new Dimension(350, 250));
-		setResizable(false);
-		pack();
-		setLocationRelativeTo(owner);
-	}
+        setTitle(SharedLocale.tr("accounts.title"));
+        initComponents();
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setMinimumSize(new Dimension(350, 250));
+        setResizable(false);
+        pack();
+        setLocationRelativeTo(owner);
+    }
 
-	private void initComponents() {
-		setLayout(new BorderLayout());
+    public static Session showAccountRequest(Window owner, Launcher launcher) {
+        AccountSelectDialog dialog = new AccountSelectDialog(owner, launcher);
+        dialog.setVisible(true);
 
-		accountList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		accountList.setLayoutOrientation(JList.VERTICAL);
-		accountList.setVisibleRowCount(0);
-		accountList.setCellRenderer(new AccountRenderer());
+        if (dialog.selected != null && dialog.selected.isOnline()) {
+            launcher.getAccounts().update(dialog.selected.toSavedSession());
+        }
 
-		JScrollPane accountPane = new JScrollPane(accountList);
-		accountPane.setPreferredSize(new Dimension(280, 150));
-		accountPane.setAlignmentX(CENTER_ALIGNMENT);
+        Persistence.commitAndForget(launcher.getAccounts());
 
-		loginButton.setFont(loginButton.getFont().deriveFont(Font.BOLD));
-		loginButton.setMargin(new Insets(0, 10, 0, 10));
+        return dialog.selected;
+    }
 
-		//Start Buttons
-		buttonsPanel.setBorder(BorderFactory.createEmptyBorder(26, 13, 13, 13));
-		if (launcher.getConfig().isOfflineEnabled()) {
-			buttonsPanel.addElement(offlineButton);
-		}
-		buttonsPanel.addGlue();
-		buttonsPanel.addElement(cancelButton);
-		buttonsPanel.addElement(loginButton);
+    private void initComponents() {
+        setLayout(new BorderLayout());
 
-		//Login Buttons
-		JPanel loginButtonsRow = new JPanel(new BorderLayout(0, 5));
-		addMojangButton.setAlignmentX(CENTER_ALIGNMENT);
-		addMicrosoftButton.setAlignmentX(CENTER_ALIGNMENT);
-		removeSelected.setAlignmentX(CENTER_ALIGNMENT);
-		loginButtonsRow.add(addMojangButton, BorderLayout.NORTH);
-		loginButtonsRow.add(addMicrosoftButton, BorderLayout.CENTER);
-		loginButtonsRow.add(removeSelected, BorderLayout.SOUTH);
-		loginButtonsRow.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
+        accountList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        accountList.setLayoutOrientation(JList.VERTICAL);
+        accountList.setVisibleRowCount(0);
+        accountList.setCellRenderer(new AccountRenderer());
 
-		JPanel listAndLoginContainer = new JPanel();
-		listAndLoginContainer.add(accountPane, BorderLayout.WEST);
-		listAndLoginContainer.add(loginButtonsRow, BorderLayout.EAST);
-		listAndLoginContainer.add(Box.createVerticalStrut(5));
-		listAndLoginContainer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        JScrollPane accountPane = new JScrollPane(accountList);
+        accountPane.setPreferredSize(new Dimension(280, 150));
+        accountPane.setAlignmentX(CENTER_ALIGNMENT);
 
-		add(listAndLoginContainer, BorderLayout.CENTER);
-		add(buttonsPanel, BorderLayout.SOUTH);
+        loginButton.setFont(loginButton.getFont().deriveFont(Font.BOLD));
+        //loginButton.setMargin(new Insets(0, 10, 0, 10));
 
-		loginButton.addActionListener(ev -> attemptExistingLogin(accountList.getSelectedValue()));
-		cancelButton.addActionListener(ev -> dispose());
+        //Start Buttons
+        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(26, 13, 13, 13));
+        /*if (launcher.getConfig().isOfflineEnabled()) {
+            buttonsPanel.addElement(offlineButton);
+        }*/
+        buttonsPanel.addGlue();
+        buttonsPanel.addElement(cancelButton);
+        buttonsPanel.addElement(loginButton);
 
-		addMojangButton.addActionListener(ev -> {
-			Session newSession = LoginDialog.showLoginRequest(this, launcher);
+        //Login Buttons
+        JPanel loginButtonsRow = new JPanel(new BorderLayout(0, 4));
+        //addCrackedButton.setAlignmentX(CENTER_ALIGNMENT);
+        addOfflineButton.setAlignmentX(CENTER_ALIGNMENT);
+        addMicrosoftButton.setAlignmentX(CENTER_ALIGNMENT);
+        removeSelected.setAlignmentX(CENTER_ALIGNMENT);
+        //loginButtonsRow.add(addCrackedButton, BorderLayout.NORTH);
+        loginButtonsRow.add(addOfflineButton, BorderLayout.NORTH);
+        loginButtonsRow.add(addMicrosoftButton, BorderLayout.CENTER);
+        loginButtonsRow.add(removeSelected, BorderLayout.SOUTH);
+        loginButtonsRow.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
 
-			if (newSession != null) {
-				launcher.getAccounts().add(newSession.toSavedSession());
-				setResult(newSession);
-			}
-		});
+        JPanel listAndLoginContainer = new JPanel();
+        listAndLoginContainer.add(accountPane, BorderLayout.WEST);
+        listAndLoginContainer.add(loginButtonsRow, BorderLayout.EAST);
+        listAndLoginContainer.add(Box.createVerticalStrut(5));
+        listAndLoginContainer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-		addMicrosoftButton.addActionListener(ev -> attemptMicrosoftLogin());
+        add(listAndLoginContainer, BorderLayout.CENTER);
+        add(buttonsPanel, BorderLayout.SOUTH);
 
-		offlineButton.addActionListener(ev ->
-				setResult(new OfflineSession(launcher.getProperties().getProperty("offlinePlayerName"))));
+        loginButton.addActionListener(ev -> attemptExistingLogin(accountList.getSelectedValue()));
+        cancelButton.addActionListener(ev -> dispose());
 
-		removeSelected.addActionListener(ev -> {
-			if (accountList.getSelectedValue() != null) {
-				boolean confirmed = SwingHelper.confirmDialog(this, SharedLocale.tr("accounts.confirmForget"),
-						SharedLocale.tr("accounts.confirmForgetTitle"));
+       /* addCrackedButton.addActionListener(ev -> {
+            Session newSession = LoginDialog.showLoginRequest(this, launcher);
 
-				if (confirmed) {
-					launcher.getAccounts().remove(accountList.getSelectedValue());
-				}
-			}
-		});
+                    //setResult(new OfflineSession(getName()));
+            launcher.getAccounts().add(newSession.toSavedSession());
+            if (newSession != null) {
+                launcher.getAccounts().add(newSession.toSavedSession());
+                setResult(newSession);
+            }
+        });*/
 
-		accountList.setSelectedIndex(0);
-	}
+        addOfflineButton.addActionListener(ev -> {
+            Session newSession = LoginDialog.showLoginRequest(this, launcher);
 
-	@Override
-	public void dispose() {
-		accountList.setModel(new DefaultListModel<>());
-		super.dispose();
-	}
+            if (newSession != null) {
+                launcher.getAccounts().update(newSession.toSavedSession());
+                setResult(newSession);
+            }
+        });
 
-	public static Session showAccountRequest(Window owner, Launcher launcher) {
-		AccountSelectDialog dialog = new AccountSelectDialog(owner, launcher);
-		dialog.setVisible(true);
+        addMicrosoftButton.addActionListener(ev -> attemptMicrosoftLogin());
 
-		if (dialog.selected != null && dialog.selected.isOnline()) {
-			launcher.getAccounts().update(dialog.selected.toSavedSession());
-		}
+        /*offlineButton.addActionListener(ev ->
+                setResult(new OfflineSession(launcher.getProperties().getProperty("offlinePlayerName"))));*/
 
-		Persistence.commitAndForget(launcher.getAccounts());
+        removeSelected.addActionListener(ev -> {
+            if (accountList.getSelectedValue() != null) {
+                boolean confirmed = SwingHelper.confirmDialog(this, SharedLocale.tr("accounts.confirmForget"),
+                        SharedLocale.tr("accounts.confirmForgetTitle"));
 
-		return dialog.selected;
-	}
+                if (confirmed) {
+                    launcher.getAccounts().remove(accountList.getSelectedValue());
+                }
+            }
+        });
 
-	private void setResult(Session result) {
-		this.selected = result;
-		dispose();
-	}
+        accountList.setSelectedIndex(0);
+    }
 
-	private void attemptMicrosoftLogin() {
-		String status = SharedLocale.tr("login.microsoft.seeBrowser");
-		SettableProgress progress = new SettableProgress(status, -1);
+    @Override
+    public void dispose() {
+        accountList.setModel(new DefaultListModel<>());
+        super.dispose();
+    }
 
-		ListenableFuture<?> future = launcher.getExecutor().submit(() -> {
-			Session newSession = launcher.getMicrosoftLogin().login(() ->
-					progress.set(SharedLocale.tr("login.loggingInStatus"), -1));
+    private void setResult(Session result) {
+        this.selected = result;
+        dispose();
+    }
 
-			if (newSession != null) {
-				launcher.getAccounts().add(newSession.toSavedSession());
-				setResult(newSession);
-			}
+    private void attemptMicrosoftLogin() {
+        String status = SharedLocale.tr("login.microsoft.seeBrowser");
+        SettableProgress progress = new SettableProgress(status, -1);
 
-			return null;
-		});
+        ListenableFuture<?> future = launcher.getExecutor().submit(() -> {
+            Session newSession = launcher.getMicrosoftLogin().login(() ->
+                    progress.set(SharedLocale.tr("login.loggingInStatus"), -1));
 
-		ProgressDialog.showProgress(this, future, progress,
-				SharedLocale.tr("login.loggingInTitle"), status);
-		SwingHelper.addErrorDialogCallback(this, future);
-	}
+            if (newSession != null) {
+                launcher.getAccounts().update(newSession.toSavedSession());
+                setResult(newSession);
+            }
 
-	private void attemptExistingLogin(SavedSession session) {
+            return null;
+        });
 
-		if (accountList.getSelectedValue() != null) {
-			new OfflineSession(session.getUsername());
-		}
-		setResult(new OfflineSession(session.getUsername()));
+        ProgressDialog.showProgress(this, future, progress,
+                SharedLocale.tr("login.loggingInTitle"), status);
+        SwingHelper.addErrorDialogCallback(this, future);
+    }
 
-		LoginService loginService = launcher.getLoginService(session.getType());
-		RestoreSessionCallable callable = new RestoreSessionCallable(loginService, session);
+    private void attemptExistingLogin(SavedSession session) {
+        setResult(new OfflineSession(session.getUsername()));
 
-		ObservableFuture<Session> future = new ObservableFuture<>(launcher.getExecutor().submit(callable), callable);
-		Futures.addCallback(future, new FutureCallback<Session>() {
-			@Override
-			public void onSuccess(Session result) {
-				setResult(result);
-			}
+        if (accountList.getSelectedValue() != null) {
+            new OfflineSession(session.getUsername());
+        }
+        else {
+            LoginService loginService = null;
+            if (session.getType() == UserType.MICROSOFT) {
+                loginService = launcher.getLoginService(session.getType());
+            }
 
-			@Override
-			public void onFailure(Throwable t) {
-				t.printStackTrace();
-			}
-		}, SwingExecutor.INSTANCE);
+            RestoreSessionCallable callable = new RestoreSessionCallable(loginService, session);
 
-		ProgressDialog.showProgress(this, future, SharedLocale.tr("login.loggingInTitle"),
-				SharedLocale.tr("login.loggingInStatus"));
-		SwingHelper.addErrorDialogCallback(this, future);
-	}
+            ObservableFuture<Session> future = new ObservableFuture<>(launcher.getExecutor().submit(callable), callable);
+            Futures.addCallback(future, new FutureCallback<Session>() {
+                @Override
+                public void onSuccess(Session result) {
+                    setResult(result);
+                }
 
-	@RequiredArgsConstructor
-	private static class RestoreSessionCallable implements Callable<Session>, ProgressObservable {
-		private final LoginService service;
-		private final SavedSession session;
+                @Override
+                public void onFailure(Throwable t) {
+                    t.printStackTrace();
+                }
+            }, SwingExecutor.INSTANCE);
 
-		@Override
-		public Session call() throws Exception {
-			return service.restore(session);
-		}
+            ProgressDialog.showProgress(this, future, SharedLocale.tr("login.loggingInTitle"),
+                    SharedLocale.tr("login.loggingInStatus"));
+            SwingHelper.addErrorDialogCallback(this, future);
+        }
+    }
 
-		@Override
-		public String getStatus() {
-			return SharedLocale.tr("accounts.refreshingStatus");
-		}
+    @RequiredArgsConstructor
+    private static class RestoreSessionCallable implements Callable<Session>, ProgressObservable {
+        private final LoginService service;
+        private final SavedSession session;
 
-		@Override
-		public double getProgress() {
-			return -1;
-		}
-	}
+        @Override
+        public Session call() throws Exception {
+            return service.restore(session);
+        }
 
-	private static class AccountRenderer extends JLabel implements ListCellRenderer<SavedSession> {
-		public AccountRenderer() {
-			setHorizontalAlignment(LEFT);
-		}
+        @Override
+        public String getStatus() {
+            return SharedLocale.tr("accounts.refreshingStatus");
+        }
 
-		@Override
-		public Component getListCellRendererComponent(JList<? extends SavedSession> list, SavedSession value, int index, boolean isSelected, boolean cellHasFocus) {
-			setText(value.getUsername());
-			if (value.getAvatarImage() != null) {
-				setIcon(new ImageIcon(value.getAvatarImage()));
-			} else {
-				setIcon(SwingHelper.createIcon(Launcher.class, "default_skin.png", 32, 32));
-			}
+        @Override
+        public double getProgress() {
+            return -1;
+        }
+    }
 
-			if (isSelected) {
-				setOpaque(true);
-				setBackground(list.getSelectionBackground());
-				setForeground(list.getSelectionForeground());
-			} else {
-				setOpaque(false);
-				setForeground(list.getForeground());
-			}
+    private static class AccountRenderer extends JLabel implements ListCellRenderer<SavedSession> {
+        public AccountRenderer() {
+            setHorizontalAlignment(LEFT);
+        }
 
-			return this;
-		}
-	}
+        @Override
+        public Component getListCellRendererComponent(JList<? extends SavedSession> list, SavedSession value, int index, boolean isSelected, boolean cellHasFocus) {
+            setText(value.getUsername());
+            if (value.getAvatarImage() != null) {
+                setIcon(new ImageIcon(value.getAvatarImage()));
+            } else {
+                setIcon(SwingHelper.createIcon(Launcher.class, "default_skin.png", 32, 32));
+            }
+
+            if (isSelected) {
+                setOpaque(true);
+                setBackground(list.getSelectionBackground());
+                setForeground(list.getSelectionForeground());
+            } else {
+                setOpaque(false);
+                setForeground(list.getForeground());
+            }
+
+            return this;
+        }
+    }
 }

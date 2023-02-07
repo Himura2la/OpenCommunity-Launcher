@@ -7,9 +7,6 @@
 package com.skcraft.launcher.auth;
 
 import com.fasterxml.jackson.annotation.*;
-import com.skcraft.launcher.auth.microsoft.MinecraftServicesAuthorizer;
-import com.skcraft.launcher.auth.microsoft.model.McProfileResponse;
-import com.skcraft.launcher.auth.skin.MinecraftSkinService;
 import com.skcraft.launcher.util.HttpRequest;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -29,9 +26,9 @@ public class YggdrasilLoginService implements LoginService {
     private final URL authUrl;
     private final String clientId;
 
-    public Session login(String id)
+    public Session login(String id, String password)
             throws IOException, InterruptedException, AuthenticationException {
-        AuthenticatePayload payload = new AuthenticatePayload(new Agent("Minecraft"), id, clientId);
+        AuthenticatePayload payload = new AuthenticatePayload(new Agent("Minecraft"), id, password, clientId);
 
         return call(this.authUrl, payload, null);
     }
@@ -54,10 +51,19 @@ public class YggdrasilLoginService implements LoginService {
         if (req.getResponseCode() != 200) {
             ErrorResponse error = req.returnContent().asJson(ErrorResponse.class);
 
-            throw new AuthenticationException(error.getErrorMessage());
+            throw new AuthenticationException(error.getErrorMessage(), true);
         } else {
             AuthenticateResponse response = req.returnContent().asJson(AuthenticateResponse.class);
             Profile profile = response.getSelectedProfile();
+
+            if (profile == null) return null; // Minecraft not owned
+
+            if (previous != null && previous.getAvatarImage() != null) {
+                profile.setAvatarImage(previous.getAvatarImage());
+            }
+
+            // DEPRECEATION: minecraft services API no longer accepts yggdrasil tokens
+            // login still works though. until it doesn't, this class will remain
 
             return profile;
         }
@@ -73,6 +79,7 @@ public class YggdrasilLoginService implements LoginService {
     private static class AuthenticatePayload {
         private final Agent agent;
         private final String username;
+        private final String password;
         private final String clientToken;
     }
 
@@ -88,7 +95,8 @@ public class YggdrasilLoginService implements LoginService {
     private static class AuthenticateResponse {
         private String accessToken;
         private String clientToken;
-        @JsonManagedReference private Profile selectedProfile;
+        @JsonManagedReference
+        private Profile selectedProfile;
     }
 
     @Data
@@ -105,12 +113,15 @@ public class YggdrasilLoginService implements LoginService {
     @ToString(exclude = "response")
     @JsonIgnoreProperties(ignoreUnknown = true)
     private static class Profile implements Session {
-        @JsonProperty("id") private String uuid;
+        @JsonIgnore
+        private final Map<String, String> userProperties = Collections.emptyMap();
+        @JsonProperty("id")
+        private String uuid;
         private String name;
         private boolean legacy;
         private byte[] avatarImage;
-        @JsonIgnore private final Map<String, String> userProperties = Collections.emptyMap();
-        @JsonBackReference private AuthenticateResponse response;
+        @JsonBackReference
+        private AuthenticateResponse response;
 
         @Override
         @JsonIgnore

@@ -27,9 +27,12 @@ import java.util.concurrent.Executors;
 
 public class Creator {
 
-    @Getter private final File dataDir;
-    @Getter private final CreatorConfig config;
-    @Getter private final ListeningExecutorService executor = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
+    @Getter
+    private final File dataDir;
+    @Getter
+    private final CreatorConfig config;
+    @Getter
+    private final ListeningExecutorService executor = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
 
     public Creator() {
         this.dataDir = getAppDataDir();
