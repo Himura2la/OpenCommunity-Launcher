@@ -209,7 +209,7 @@ public class AccountSelectDialog extends JDialog {
 
             ProgressDialog.showProgress(this, future, SharedLocale.tr("login.loggingInTitle"),
                     SharedLocale.tr("login.loggingInStatus"));
-            SwingHelper.addErrorDialogCallback(this, future);
+            //SwingHelper.addErrorDialogCallback(this, future);
         }
     }
 
