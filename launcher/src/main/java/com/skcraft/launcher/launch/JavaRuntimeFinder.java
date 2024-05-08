@@ -39,10 +39,15 @@ public final class JavaRuntimeFinder {
         try {
             getEntriesFromRegistry(entries, "SOFTWARE\\JavaSoft\\Java Runtime Environment");
             getEntriesFromRegistry(entries, "SOFTWARE\\JavaSoft\\Java Development Kit");
-        } catch (Throwable ignored) {
-        }
+        } catch (Throwable ignored) { }
         
-        // TODO: Check JAVA_HOME and JRE_HOME env vars.
+        try {
+            JREEntry entry = new JREEntry();
+            entry.dir = new File(System.getProperty("java.home"), "bin/java.exe");
+            entry.version = System.getProperty("java.version");
+            entry.is64Bit = true;  // probem?
+            entries.add(entry);
+        } catch (Throwable ignored) { }
         
         Collections.sort(entries);
         
