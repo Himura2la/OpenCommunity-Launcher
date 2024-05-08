@@ -41,6 +41,9 @@ public final class JavaRuntimeFinder {
             getEntriesFromRegistry(entries, "SOFTWARE\\JavaSoft\\Java Development Kit");
         } catch (Throwable ignored) {
         }
+        
+        // TODO: Check JAVA_HOME and JRE_HOME env vars.
+        
         Collections.sort(entries);
         
         if (entries.size() > 0) {
